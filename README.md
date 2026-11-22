@@ -2,6 +2,8 @@
 
 Sistema web de gestão de saldos e vendas de grãos para **cerealistas** e **produtores** — 404 Team, Projeto Integrador IV (UNIFIO).
 
+**Aplicação publicada:** https://safralink-omega.vercel.app
+
 ```
 SafraLinK/
 ├── Front-end/Front      Angular 21 (NgModule) + Angular Material   → README próprio
