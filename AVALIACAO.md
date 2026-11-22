@@ -8,7 +8,7 @@ Sistema web de gestão de saldos e vendas de grãos entre **cerealistas** e **pr
 | Item | Endereço |
 | --- | --- |
 | Aplicação publicada | _preencher (link do deploy)_ |
-| Repositório Git | _preencher (link do GitHub)_ |
+| Repositório Git | https://github.com/leonardodevpereira/SafraLink |
 
 ## 2. Integrantes
 
