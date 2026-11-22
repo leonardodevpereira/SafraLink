@@ -8,4 +8,4 @@ safralink:
   cors:
     origens: ${CORS_ORIGENS}
   frontend-url: ${FRONTEND_URL}
-  dados-demo: false
+  dados-demo: ${DADOS_DEMO:false}

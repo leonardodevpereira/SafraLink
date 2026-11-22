@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: safralink-api
+    runtime: docker
+    dockerfilePath: ./Back-end/safralink-api/Dockerfile
+    dockerContext: ./Back-end/safralink-api
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DB_URL
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: CORS_ORIGENS
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: DADOS_DEMO
+        value: "true"
