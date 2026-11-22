@@ -7,7 +7,7 @@ Sistema web de gestão de saldos e vendas de grãos entre **cerealistas** e **pr
 
 | Item | Endereço |
 | --- | --- |
-| Aplicação publicada | _preencher (link do deploy)_ |
+| Aplicação publicada | https://safralink-omega.vercel.app |
 | Repositório Git | https://github.com/leonardodevpereira/SafraLink |
 
 ## 2. Integrantes
@@ -28,6 +28,8 @@ Senha de todas as contas: `Safra@2026`
 | Produtor | `carlos@safralink.dev` | usado no roteiro abaixo |
 
 Todos os dados (nomes, CPFs, valores) são fictícios.
+
+Na versão publicada, o front fica na Vercel, a API no Render (plano gratuito) e o banco MySQL no Aiven. Se a API estiver parada por inatividade, o primeiro acesso (o login) pode levar cerca de um minuto; depois responde normalmente.
 
 ## 4. Roteiro do fluxo principal (cerca de 8 passos)
 
