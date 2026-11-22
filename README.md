@@ -90,11 +90,3 @@ cd Front-end/Front && npm install && npm start
 ```
 
 As contas de demonstração do perfil `dev` estão em [`Back-end/README.md`](Back-end/README.md).
-
-## Equipe
-
-**404 Team**
-
-| Nome | RA |
-| --- | --- |
-| Leonardo Henrique Pereira Jose | 269128 |
