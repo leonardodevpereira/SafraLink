@@ -1,6 +1,6 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/front/browser",
+  "outputDirectory": "dist/Front",
   "rewrites": [
     { "source": "/api/:path*", "destination": "https://safralink-api.onrender.com/api/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
