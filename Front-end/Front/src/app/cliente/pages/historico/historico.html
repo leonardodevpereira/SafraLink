@@ -1,0 +1,148 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Histórico</h1>
+      <p>Suas vendas processadas, com os descontos aplicados, e as entregas registradas.</p>
+    </div>
+    @if (aba() === 'vendas') {
+      <div class="acoes">
+        <button mat-stroked-button (click)="exportar()" [disabled]="exportando()">
+          Exportar (Excel/CSV)
+        </button>
+      </div>
+    }
+  </div>
+
+  <mat-button-toggle-group
+    class="abas"
+    [value]="aba()"
+    (change)="trocarAba($event.value)"
+    aria-label="Tipo de histórico"
+    hideSingleSelectionIndicator
+  >
+    <mat-button-toggle value="vendas">Vendas</mat-button-toggle>
+    <mat-button-toggle value="entregas">Entregas</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  @if (aba() === 'vendas') {
+    <div class="filters">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>De</mat-label>
+        <input matInput type="date" #inicio [value]="de()" (change)="aplicarPeriodo(inicio.value, fim.value)" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Até</mat-label>
+        <input matInput type="date" #fim [value]="ate()" (change)="aplicarPeriodo(inicio.value, fim.value)" />
+      </mat-form-field>
+      @if (de() || ate()) {
+        <button mat-button (click)="aplicarPeriodo('', '')">Limpar período</button>
+      }
+    </div>
+  }
+
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (erro(); as e) {
+    <p class="erro-form" role="alert">{{ e }}</p>
+  }
+
+  <mat-card appearance="outlined">
+    @if (aba() === 'vendas') {
+      @if (!carregando() && transacoes().length === 0 && !erro()) {
+        <div class="empty">
+          <mat-icon>history</mat-icon>
+          <p>Nenhuma venda aprovada no período.</p>
+        </div>
+      } @else {
+        <div class="table-wrap">
+          <table class="tabela">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Produto</th>
+                <th class="num">Sacas</th>
+                <th class="num">Preço/sc</th>
+                <th class="num">Bruto</th>
+                <th class="num">Descontos</th>
+                <th class="num">Líquido</th>
+                <th>Situação</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (t of transacoes(); track t.id) {
+                <tr
+                  class="clicavel"
+                  tabindex="0"
+                  role="button"
+                  [attr.aria-label]="'Ver detalhes e contrato da venda ' + t.id"
+                  (click)="abrir(t)"
+                  (keydown.enter)="abrir(t)"
+                >
+                  <td>{{ t.criadoEm | date: 'dd/MM/yyyy' }}</td>
+                  <td>{{ t.produtoNome }}</td>
+                  <td class="num">{{ t.quantidade | number: '1.0-2' }}</td>
+                  <td class="num">{{ t.precoSaca | currency: 'BRL' }}</td>
+                  <td class="num">{{ t.valorBruto | currency: 'BRL' }}</td>
+                  <td class="num">
+                    @if (t.descontos.length > 0) {
+                      <span [matTooltip]="descricaoDescontos(t)">
+                        − {{ t.totalDescontos | currency: 'BRL' }}
+                      </span>
+                    } @else {
+                      <span class="muted">—</span>
+                    }
+                  </td>
+                  <td class="num"><strong>{{ t.valorLiquido | currency: 'BRL' }}</strong></td>
+                  <td><app-status-chip [status]="t.status" /></td>
+                  <td class="ver">
+                    <span class="ver-rotulo">Detalhes e contrato</span>
+                    <mat-icon>chevron_right</mat-icon>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    } @else {
+      @if (!carregando() && entregas().length === 0 && !erro()) {
+        <div class="empty">
+          <p>Nenhuma entrega registrada ainda.</p>
+        </div>
+      } @else {
+        <div class="table-wrap">
+          <table class="tabela">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Produto</th>
+                <th class="num">Quantidade</th>
+                <th>Observação</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (e of entregas(); track e.id) {
+                <tr>
+                  <td>{{ e.dataEntrega | date: 'dd/MM/yyyy' }}</td>
+                  <td>{{ e.produtoNome }}</td>
+                  <td class="num">{{ e.quantidade | number: '1.0-2' }} sc</td>
+                  <td class="muted">{{ e.observacao || '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+    <mat-paginator
+      [length]="total()"
+      [pageSize]="tamanho()"
+      [pageIndex]="pagina()"
+      [pageSizeOptions]="[10, 20, 50]"
+      (page)="mudarPagina($event)"
+      aria-label="Páginas do histórico"
+    />
+  </mat-card>
+</div>

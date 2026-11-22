@@ -1,0 +1,129 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Transações</h1>
+      <p>Todas as compras aprovadas, com os descontos aplicados em cada uma.</p>
+    </div>
+    <div class="acoes">
+      <button mat-stroked-button (click)="exportar()" [disabled]="exportando()">
+        Exportar (Excel/CSV)
+      </button>
+    </div>
+  </div>
+
+  <form class="filters" [formGroup]="filtros" (ngSubmit)="aplicar()">
+    <app-produtor-select
+      [produtores]="produtores()"
+      [controle]="filtros.controls.produtorId"
+      rotulo="Produtor"
+      [compacto]="true"
+    />
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Produto</mat-label>
+      <mat-select formControlName="produtoId">
+        <mat-option [value]="null">Todos</mat-option>
+        @for (p of produtos(); track p.id) {
+          <mat-option [value]="p.id">{{ p.nome }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Situação</mat-label>
+      <mat-select formControlName="status">
+        <mat-option [value]="null">Todas</mat-option>
+        @for (s of situacoes; track s.valor) {
+          <mat-option [value]="s.valor">{{ s.rotulo }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>De</mat-label>
+      <input matInput type="date" formControlName="de" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Até</mat-label>
+      <input matInput type="date" formControlName="ate" />
+    </mat-form-field>
+    <div class="row">
+      <button mat-flat-button type="submit">Filtrar</button>
+      <button mat-button type="button" (click)="limpar()">Limpar</button>
+    </div>
+  </form>
+
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (erro(); as e) {
+    <p class="erro-form" role="alert">{{ e }}</p>
+  }
+
+  <mat-card appearance="outlined">
+    @if (!carregando() && itens().length === 0 && !erro()) {
+      <div class="empty">
+        <mat-icon>receipt_long</mat-icon>
+        <p>Nenhuma transação encontrada com esses filtros.</p>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Produtor</th>
+              <th>Produto</th>
+              <th class="num">Sacas</th>
+              <th class="num">Preço/sc</th>
+              <th class="num">Bruto</th>
+              <th class="num">Descontos</th>
+              <th class="num">Líquido</th>
+              <th>Situação</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (t of itens(); track t.id) {
+              <tr
+                class="clicavel"
+                tabindex="0"
+                role="button"
+                [attr.aria-label]="'Ver detalhes e contrato da transação ' + t.id"
+                (click)="abrir(t)"
+                (keydown.enter)="abrir(t)"
+              >
+                <td>{{ t.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ t.produtorNome }}</td>
+                <td>{{ t.produtoNome }}</td>
+                <td class="num">{{ t.quantidade | number: '1.0-2' }}</td>
+                <td class="num">{{ t.precoSaca | currency: 'BRL' }}</td>
+                <td class="num">{{ t.valorBruto | currency: 'BRL' }}</td>
+                <td class="num">
+                  @if (t.descontos.length > 0) {
+                    <span [matTooltip]="descricaoDescontos(t)">− {{ t.totalDescontos | currency: 'BRL' }}</span>
+                  } @else {
+                    <span class="muted">—</span>
+                  }
+                </td>
+                <td class="num">
+                  <strong>{{ t.valorLiquido | currency: 'BRL' }}</strong>
+                </td>
+                <td><app-status-chip [status]="t.status" /></td>
+                <td class="ver">
+                  <span class="ver-rotulo">Detalhes e contrato</span>
+                  <mat-icon>chevron_right</mat-icon>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <mat-paginator
+        [length]="total()"
+        [pageSize]="tamanho()"
+        [pageIndex]="pagina()"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="mudarPagina($event)"
+        aria-label="Páginas de transações"
+      />
+    }
+  </mat-card>
+</div>

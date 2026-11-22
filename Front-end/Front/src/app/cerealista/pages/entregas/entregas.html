@@ -1,0 +1,109 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Entregas</h1>
+      <p>Registre os grãos recebidos. A quantidade entra no saldo do produtor e ele é avisado.</p>
+    </div>
+  </div>
+
+  <mat-card appearance="outlined">
+    <form class="card-pad form" [formGroup]="form" (ngSubmit)="registrar()" novalidate>
+      <app-produtor-select
+        [produtores]="produtores()"
+        [controle]="form.controls.produtorId"
+        rotulo="Produtor"
+        [obrigatorio]="true"
+      />
+
+      <mat-form-field appearance="outline">
+        <mat-label>Produto</mat-label>
+        <mat-select formControlName="produtoId">
+          @for (p of produtos(); track p.id) {
+            <mat-option [value]="p.id">{{ p.nome }}</mat-option>
+          }
+        </mat-select>
+        @if (form.controls.produtoId.touched && form.controls.produtoId.invalid) {
+          <mat-error>Escolha o produto.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Quantidade (sacas)</mat-label>
+        <input matInput type="number" step="0.01" min="0.01" inputmode="decimal" formControlName="quantidade" />
+        @if (form.controls.quantidade.touched && form.controls.quantidade.invalid) {
+          <mat-error>Informe uma quantidade maior que zero.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Data da entrega</mat-label>
+        <input matInput type="date" [max]="hoje" formControlName="dataEntrega" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="largo">
+        <mat-label>Observação (opcional)</mat-label>
+        <input matInput formControlName="observacao" maxlength="255" placeholder="Ex.: 2 viagens, caminhão ABC-1234" />
+      </mat-form-field>
+
+      @if (erro(); as e) {
+        <p class="erro-form largo" role="alert">{{ e }}</p>
+      }
+
+      <div class="largo row fim">
+        <button mat-flat-button type="submit" [disabled]="salvando()">
+          {{ salvando() ? 'Registrando…' : 'Registrar entrega' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+
+  <h2 class="secao-titulo">Últimas entregas</h2>
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  <mat-card appearance="outlined">
+    @if (!carregando() && entregas().length === 0) {
+      <div class="empty">
+        <p>Nenhuma entrega registrada ainda.</p>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Produtor</th>
+              <th>Produto</th>
+              <th class="num">Quantidade</th>
+              <th>Observação</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (e of entregas(); track e.id) {
+              <tr>
+                <td>{{ e.dataEntrega | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ e.produtorNome }}</td>
+                <td>{{ e.produtoNome }}</td>
+                <td class="num">{{ e.quantidade | number: '1.0-2' }} sc</td>
+                <td class="muted">{{ e.observacao || '—' }}</td>
+                <td class="num">
+                  <button mat-icon-button aria-label="Editar entrega" (click)="editar(e)"><mat-icon>edit</mat-icon></button>
+                  <button mat-icon-button aria-label="Excluir entrega" (click)="excluir(e)"><mat-icon>delete</mat-icon></button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <mat-paginator
+        [length]="total()"
+        [pageSize]="tamanho()"
+        [pageIndex]="pagina()"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="mudarPagina($event)"
+        aria-label="Páginas de entregas"
+      />
+    }
+  </mat-card>
+</div>

@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+
+safralink:
+  cors:
+    origens: ${CORS_ORIGENS}
+  frontend-url: ${FRONTEND_URL}
+  dados-demo: false

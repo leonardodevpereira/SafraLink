@@ -1,0 +1,74 @@
+.produto {
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &.indisponivel .preco .valor {
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.cabeca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nome {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+
+  strong {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  span {
+    font-size: 0.8125rem;
+  }
+}
+
+.preco {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+
+  .valor {
+    font-size: 1.875rem;
+    font-weight: 650;
+    letter-spacing: -0.025em;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.dados {
+  margin: 0;
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--mat-sys-surface-container-low);
+  font-size: 0.875rem;
+
+  > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  dt {
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 600;
+  }
+}
+
+.nota {
+  margin: 0;
+  font-size: 0.8125rem;
+}

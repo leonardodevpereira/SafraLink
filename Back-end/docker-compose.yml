@@ -1,0 +1,25 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: safralink-mysql
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_0900_ai_ci
+    environment:
+      MYSQL_DATABASE: safralink
+      MYSQL_USER: safralink
+      MYSQL_PASSWORD: safralink
+      MYSQL_ROOT_PASSWORD: safralink-root
+      TZ: UTC
+    ports:
+      - "3307:3306"
+    volumes:
+      - safralink-mysqldata:/var/lib/mysql
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -usafralink -psafralink --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  safralink-mysqldata:

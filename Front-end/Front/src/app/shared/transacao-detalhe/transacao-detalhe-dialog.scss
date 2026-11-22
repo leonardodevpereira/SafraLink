@@ -1,0 +1,128 @@
+.titulo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.abas {
+  margin-bottom: 18px;
+}
+
+.tab {
+  font-variant-numeric: tabular-nums;
+}
+
+.resumo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px 20px;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .rotulo {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.valores {
+  border: 1px solid var(--sl-line);
+  border-radius: 10px;
+  padding: 6px 14px;
+
+  .linha {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+  }
+
+  .total {
+    border-top: 1px solid var(--sl-line);
+    margin-top: 4px;
+    padding-top: 10px;
+    font-size: 1.0625rem;
+    font-weight: 650;
+  }
+}
+
+.contrato {
+  background: #ffffff;
+  color: #111111;
+  border: 1px solid var(--sl-line);
+  border-radius: 6px;
+  padding: 28px 32px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  box-shadow: var(--sl-shadow);
+
+  h1 {
+    margin: 0 0 4px;
+    font-size: 1.125rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .numero {
+    text-align: center;
+    margin: 0 0 20px;
+    color: #555555;
+    font-size: 0.8125rem;
+  }
+
+  h2 {
+    margin: 16px 0 4px;
+    font-size: 0.9375rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0 0 8px;
+    text-align: justify;
+  }
+
+  ul {
+    margin: 0 0 8px;
+    padding-left: 20px;
+  }
+
+  .local {
+    margin-top: 22px;
+    text-align: right;
+  }
+
+  .assinaturas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 36px;
+    margin-top: 48px;
+  }
+
+  .assinatura {
+    flex: 1 1 200px;
+    text-align: center;
+    border-top: 1px solid #111111;
+    padding-top: 6px;
+    font-size: 0.875rem;
+  }
+
+  .nota {
+    margin-top: 24px;
+    font-size: 0.75rem;
+    color: #666666;
+  }
+}
+
+@media (max-width: 599px) {
+  .contrato {
+    padding: 20px 16px;
+  }
+}

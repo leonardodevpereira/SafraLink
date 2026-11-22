@@ -1,0 +1,19 @@
+.duas {
+  display: grid;
+  grid-template-columns: 1fr 96px;
+  gap: 12px;
+}
+
+.botao {
+  height: 48px;
+  margin-top: 4px;
+}
+
+.rodape {
+  text-align: center;
+  margin: 20px 0 0;
+
+  a {
+    color: var(--mat-sys-primary);
+  }
+}

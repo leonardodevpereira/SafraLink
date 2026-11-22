@@ -1,0 +1,39 @@
+:host {
+  display: block;
+}
+
+.grafico {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.grade {
+  stroke: var(--mat-sys-outline-variant);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+.eixo {
+  fill: var(--mat-sys-on-surface-variant);
+  font-size: 11px;
+}
+
+.linha {
+  fill: none;
+  stroke: var(--mat-sys-primary);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.area {
+  fill: var(--mat-sys-primary);
+  opacity: 0.12;
+}
+
+.ponto {
+  fill: var(--mat-sys-surface);
+  stroke: var(--mat-sys-primary);
+  stroke-width: 2;
+}

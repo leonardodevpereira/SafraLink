@@ -1,0 +1,60 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Produtos</h1>
+      <p>Cadastro dos grãos negociados, por mercado. Preços e quantidades ficam em "Preços e quantidades".</p>
+    </div>
+    <div class="acoes">
+      <button mat-flat-button (click)="abrir()">Novo produto</button>
+    </div>
+  </div>
+
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (erro(); as e) {
+    <p class="erro-form" role="alert">{{ e }}</p>
+  }
+
+  <mat-card appearance="outlined">
+    @if (!carregando() && produtos().length === 0 && !erro()) {
+      <div class="empty">
+        <p>Nenhum produto cadastrado.</p>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Grão</th>
+              <th>Mercado</th>
+              <th class="num">Preço atual</th>
+              <th class="num">Disponível p/ compra</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of produtos(); track p.id) {
+              <tr>
+                <td><strong>{{ p.nome }}</strong></td>
+                <td>{{ p.grao }}</td>
+                <td>{{ p.mercado }}</td>
+                <td class="num">{{ p.precoAtual ? (p.precoAtual | currency: 'BRL') : '—' }}</td>
+                <td class="num">{{ p.quantidadeDisponivel | number: '1.0-2' }} sc</td>
+                <td class="num">
+                  <button mat-icon-button [attr.aria-label]="'Editar ' + p.nome" (click)="abrir(p)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button [attr.aria-label]="'Excluir ' + p.nome" (click)="excluir(p)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </mat-card>
+</div>

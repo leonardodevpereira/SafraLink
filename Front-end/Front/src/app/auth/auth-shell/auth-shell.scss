@@ -1,0 +1,137 @@
+.tela {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(380px, 46%) 1fr;
+  background: #ffffff;
+}
+
+.marca {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 44px 48px;
+  background:
+    radial-gradient(120% 80% at 0% 0%, #14565e 0%, rgba(20, 86, 94, 0) 60%),
+    var(--sl-sidebar);
+  color: #e8f1f2;
+}
+
+.logo {
+  position: relative;
+  z-index: 1;
+  align-self: flex-start;
+}
+
+.texto {
+  position: relative;
+  z-index: 1;
+  max-width: 440px;
+
+  .selo {
+    margin: 0 0 14px;
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #ff9f5c;
+  }
+
+  h2 {
+    margin: 0 0 32px;
+    font-size: 2rem;
+    line-height: 1.18;
+    font-weight: 650;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-left: 16px;
+    border-left: 2px solid rgba(255, 138, 61, 0.7);
+
+    strong {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    span {
+      font-size: 0.875rem;
+      line-height: 1.45;
+      color: rgba(232, 241, 242, 0.7);
+    }
+  }
+}
+
+.marca-dagua {
+  position: absolute;
+  right: -90px;
+  bottom: -90px;
+  width: 360px;
+  opacity: 0.07;
+  pointer-events: none;
+}
+
+.formulario {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 28px;
+  background: #ffffff;
+}
+
+.conteudo {
+  width: 100%;
+  max-width: 400px;
+
+  h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 650;
+    letter-spacing: -0.025em;
+  }
+
+  .sub {
+    margin: 6px 0 24px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.logo-mobile {
+  display: none;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 899px) {
+  .tela {
+    grid-template-columns: 1fr;
+  }
+
+  .marca {
+    display: none;
+  }
+
+  .logo-mobile {
+    display: block;
+  }
+
+  .formulario {
+    align-items: flex-start;
+    padding-top: 36px;
+  }
+}

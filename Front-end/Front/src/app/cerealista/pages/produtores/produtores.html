@@ -1,0 +1,90 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Meus produtores</h1>
+      <p>Quem vende para você, quanto tem de saldo e quando foi a última transação.</p>
+    </div>
+    <div class="acoes">
+      <button mat-flat-button (click)="novoOuEditar()">Novo produtor</button>
+      <button mat-stroked-button (click)="exportar()" [disabled]="exportando()">
+        Exportar (Excel/CSV)
+      </button>
+    </div>
+  </div>
+
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="busca">
+    <mat-label>Buscar por nome, CPF ou e-mail</mat-label>
+    <input matInput type="search" [formControl]="busca" />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (erro(); as e) {
+    <p class="erro-form" role="alert">{{ e }}</p>
+  }
+
+  <mat-card appearance="outlined">
+    @if (!carregando() && produtores().length === 0 && !erro()) {
+      <div class="empty">
+        <mat-icon>groups</mat-icon>
+        <p>Nenhum produtor encontrado.</p>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>CPF</th>
+              <th>Contato</th>
+              <th>Cidade</th>
+              <th class="num">Saldo total</th>
+              <th>Última transação</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of produtores(); track p.id) {
+              <tr class="clicavel" (click)="verSaldos(p)" tabindex="0" (keydown.enter)="verSaldos(p)">
+                <td>
+                  <strong>{{ p.nome }}</strong>
+                  @if (!p.ativo) {
+                    <span class="chip-status st-CANCELADA">Inativo</span>
+                  }
+                </td>
+                <td>{{ p.cpf | documento }}</td>
+                <td>
+                  {{ p.email }}
+                  @if (p.telefone) {
+                    <br /><span class="muted">{{ p.telefone }}</span>
+                  }
+                </td>
+                <td>{{ p.cidade || '—' }}</td>
+                <td class="num">{{ p.saldoTotalSacas | number: '1.0-2' }} sc</td>
+                <td>
+                  @if (p.ultimaTransacaoEm) {
+                    {{ p.ultimaTransacaoEm | date: 'dd/MM/yyyy' }}
+                  } @else {
+                    <span class="muted">Nenhuma</span>
+                  }
+                </td>
+                <td class="num">
+                  @if (p.ativo) {
+                    <button mat-icon-button [attr.aria-label]="'Editar ' + p.nome" (click)="novoOuEditar(p); $event.stopPropagation()">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button [attr.aria-label]="'Excluir ' + p.nome" (click)="excluir(p); $event.stopPropagation()">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </mat-card>
+</div>

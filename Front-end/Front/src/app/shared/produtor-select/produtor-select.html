@@ -1,0 +1,28 @@
+<mat-form-field appearance="outline" class="campo" [subscriptSizing]="compacto() ? 'dynamic' : 'fixed'">
+  <mat-label>{{ rotulo() }}</mat-label>
+  <input
+    matInput
+    type="text"
+    autocomplete="off"
+    placeholder="Digite o nome ou o CPF"
+    [formControl]="texto"
+    [matAutocomplete]="auto"
+    [errorStateMatcher]="matcher"
+  />
+  @if (texto.value) {
+    <button mat-icon-button matSuffix type="button" aria-label="Limpar produtor" (click)="limpar()">
+      <mat-icon>close</mat-icon>
+    </button>
+  }
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="exibir" autoActiveFirstOption>
+    @for (p of filtrados(); track p.id) {
+      <mat-option [value]="p">
+        <span class="nome">{{ p.nome }}</span>
+        <small class="muted"> · {{ p.cpf | documento }}</small>
+      </mat-option>
+    } @empty {
+      <mat-option disabled>Nenhum produtor encontrado</mat-option>
+    }
+  </mat-autocomplete>
+  <mat-error>Escolha um produtor da lista.</mat-error>
+</mat-form-field>

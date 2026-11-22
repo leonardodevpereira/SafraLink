@@ -1,0 +1,32 @@
+<app-auth-shell titulo="Nova senha" subtitulo="Escolha uma senha de no mínimo 8 caracteres.">
+  @if (!token) {
+    <p class="erro-form" role="alert">Link inválido. Solicite um novo link de recuperação.</p>
+    <a mat-flat-button routerLink="/auth/esqueci-senha" class="full">Solicitar novo link</a>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Nova senha</mat-label>
+        <input matInput type="password" formControlName="senha" autocomplete="new-password" />
+        @if (form.controls.senha.touched && form.controls.senha.invalid) {
+          <mat-error>A senha precisa ter de 8 a 72 caracteres.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Confirmar nova senha</mat-label>
+        <input matInput type="password" formControlName="confirmacao" autocomplete="new-password" />
+        @if (form.controls.confirmacao.touched && (form.hasError('senhasDiferentes') || form.controls.confirmacao.invalid)) {
+          <mat-error>As senhas não conferem.</mat-error>
+        }
+      </mat-form-field>
+
+      @if (erro(); as e) {
+        <p class="erro-form" role="alert">{{ e }}</p>
+      }
+
+      <button mat-flat-button type="submit" class="full botao" [disabled]="enviando()">
+        {{ enviando() ? 'Salvando…' : 'Salvar nova senha' }}
+      </button>
+    </form>
+  }
+</app-auth-shell>

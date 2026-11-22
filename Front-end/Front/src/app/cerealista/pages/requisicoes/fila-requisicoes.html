@@ -1,0 +1,89 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Requisições de venda</h1>
+      <p>Aprove, recuse ou negocie o preço de cada solicitação dos produtores.</p>
+    </div>
+  </div>
+
+  <mat-button-toggle-group
+    class="filtro"
+    [value]="status()"
+    (change)="filtrar($event.value)"
+    aria-label="Filtrar por situação"
+    hideSingleSelectionIndicator
+  >
+    @for (f of filtros; track f.rotulo) {
+      <mat-button-toggle [value]="f.valor">{{ f.rotulo }}</mat-button-toggle>
+    }
+  </mat-button-toggle-group>
+
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (erro(); as e) {
+    <p class="erro-form" role="alert">{{ e }}</p>
+  }
+
+  <mat-card appearance="outlined">
+    @if (!carregando() && itens().length === 0 && !erro()) {
+      <div class="empty">
+        <mat-icon>task_alt</mat-icon>
+        <p>Nenhuma requisição nesta situação.</p>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Produtor / Produto</th>
+              <th class="num">Quantidade</th>
+              <th class="num">Preço/sc</th>
+              <th class="num">Valor bruto</th>
+              @if (status() !== 'PENDENTE') {
+                <th>Situação</th>
+              }
+              <th class="num">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of itens(); track r.id) {
+              <tr class="clicavel" (click)="abrir(r)" tabindex="0" (keydown.enter)="abrir(r)">
+                <td>{{ r.criadoEm | date: 'dd/MM HH:mm' }}</td>
+                <td>
+                  <strong>{{ r.produtorNome }}</strong><br />
+                  <span class="muted">{{ r.produtoNome }}</span>
+                </td>
+                <td class="num">{{ r.quantidade | number: '1.0-2' }} sc</td>
+                <td class="num">{{ r.precoSaca | currency: 'BRL' }}</td>
+                <td class="num">{{ r.valorBruto | currency: 'BRL' }}</td>
+                @if (status() !== 'PENDENTE') {
+                  <td>
+                    <app-status-chip [status]="r.status" />
+                  </td>
+                }
+                <td class="num acoes-linha" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                  @if (r.status === 'PENDENTE') {
+                    <button mat-stroked-button [disabled]="ocupadoId() === r.id" (click)="recusar(r)">Recusar</button>
+                    <button mat-flat-button [disabled]="ocupadoId() === r.id" (click)="aprovar(r)">Aprovar</button>
+                  } @else {
+                    <button mat-button (click)="abrir(r)">Detalhes</button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <mat-paginator
+        [length]="total()"
+        [pageSize]="tamanho()"
+        [pageIndex]="pagina()"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="mudarPagina($event)"
+        aria-label="Páginas de requisições"
+      />
+    }
+  </mat-card>
+</div>

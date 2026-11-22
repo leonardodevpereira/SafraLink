@@ -1,0 +1,31 @@
+.form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 4px 16px;
+}
+
+.campo-largo {
+  grid-column: 1 / -1;
+}
+
+.identificacao {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+  padding-bottom: 12px;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rotulo {
+    font: var(--mat-sys-label-medium);
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.acoes {
+  justify-content: flex-end;
+}

@@ -1,0 +1,97 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Preços e quantidades</h1>
+      <p>
+        Atualize o preço por saca (os produtores são avisados) e a quantidade máxima que você compra de cada produto.
+      </p>
+    </div>
+  </div>
+
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (erro(); as e) {
+    <p class="erro-form" role="alert">{{ e }}</p>
+  }
+
+  @if (!carregando()) {
+    <mat-card appearance="outlined">
+      <div class="table-wrap">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th class="num">Preço atual</th>
+              <th>Novo preço (R$/sc)</th>
+              <th>Quantidade disponível (sc)</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of produtos(); track p.id) {
+              @let c = controles().get(p.id);
+              <tr class="clicavel" [class.linha-ativa]="selecionado()?.id === p.id" (click)="selecionar(p)">
+                <td>
+                  <strong>{{ p.nome }}</strong>
+                </td>
+                <td class="num">
+                  @if (p.precoAtual !== null && p.precoAtual !== undefined) {
+                    {{ p.precoAtual | currency: 'BRL' }}
+                  } @else {
+                    <span class="muted">sem preço</span>
+                  }
+                </td>
+                <td>
+                  @if (c) {
+                    <div class="celula" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" tabindex="-1">
+                      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo">
+                        <mat-label>R$/sc</mat-label>
+                        <input matInput type="number" step="0.01" min="0.01" inputmode="decimal" [formControl]="c.preco" />
+                      </mat-form-field>
+                      <button
+                        mat-flat-button
+                        [disabled]="salvando() === 'preco-' + p.id || c.preco.invalid"
+                        (click)="atualizarPreco(p)"
+                      >
+                        Atualizar
+                      </button>
+                    </div>
+                  }
+                </td>
+                <td>
+                  @if (c) {
+                    <div class="celula" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" tabindex="-1">
+                      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campo">
+                        <mat-label>Sacas</mat-label>
+                        <input matInput type="number" step="1" min="0" inputmode="decimal" [formControl]="c.quantidade" />
+                      </mat-form-field>
+                      <button
+                        mat-stroked-button
+                        [disabled]="salvando() === 'qtd-' + p.id || c.quantidade.invalid"
+                        (click)="atualizarQuantidade(p)"
+                      >
+                        Salvar
+                      </button>
+                    </div>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </mat-card>
+
+    @if (selecionado(); as s) {
+      <h2 class="secao-titulo">Histórico de {{ s.nome }} (30 dias)</h2>
+      <mat-card appearance="outlined">
+        <div class="card-pad">
+          <app-price-chart [pontos]="pontos()" [descricao]="'Evolução do preço de ' + s.nome" />
+        </div>
+      </mat-card>
+    }
+    <p class="muted nota">
+      A quantidade disponível diminui a cada venda aprovada. Uma requisição só é aprovada se couber nesse limite.
+    </p>
+  }
+</div>

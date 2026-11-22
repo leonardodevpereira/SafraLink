@@ -1,0 +1,148 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Painel</h1>
+      <p>Visão geral das compras e do que espera a sua decisão.</p>
+    </div>
+    <div class="acoes">
+      <a mat-stroked-button routerLink="/cerealista/entregas">Registrar entrega</a>
+      <a mat-flat-button routerLink="/cerealista/requisicoes">Ver requisições</a>
+    </div>
+  </div>
+
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (erro(); as e) {
+    <p class="erro-form" role="alert">{{ e }}</p>
+  }
+
+  @if (dados(); as d) {
+    <div class="grid-kpi">
+      <mat-card appearance="outlined">
+        <div class="card-pad kpi">
+          <span class="kpi-rotulo">Total comprado</span>
+          <span class="kpi-valor">{{ d.totalSacasCompradas | number: '1.0-2' }} <small>sc</small></span>
+          <span class="kpi-nota">em vendas aprovadas</span>
+        </div>
+      </mat-card>
+      <mat-card appearance="outlined">
+        <div class="card-pad kpi">
+          <span class="kpi-rotulo">Valor comprado</span>
+          <span class="kpi-valor">{{ d.valorTotalComprado | currency: 'BRL' }}</span>
+          <span class="kpi-nota">descontos aplicados: {{ d.totalDescontos | currency: 'BRL' }}</span>
+        </div>
+      </mat-card>
+      <mat-card appearance="outlined">
+        <div class="card-pad kpi">
+          <span class="kpi-rotulo">Produtores ativos</span>
+          <span class="kpi-valor">{{ d.produtoresAtivos }}</span>
+          <span class="kpi-nota">cadastrados na plataforma</span>
+        </div>
+      </mat-card>
+      <a class="card-link" routerLink="/cerealista/requisicoes" aria-label="Ver as requisições pendentes">
+        <mat-card appearance="outlined" [class.destaque]="d.requisicoesPendentes > 0">
+          <div class="card-pad kpi">
+            <span class="kpi-rotulo">Requisições pendentes</span>
+            <span class="kpi-valor">{{ d.requisicoesPendentes }}</span>
+            <span class="kpi-nota">aguardando aprovação ou recusa</span>
+            <span class="ir">
+              Ver requisições
+              <mat-icon inline>arrow_forward</mat-icon>
+            </span>
+          </div>
+        </mat-card>
+      </a>
+    </div>
+
+    <mat-card appearance="outlined">
+      <div class="card-pad">
+        <div class="cab-grafico">
+          <div>
+            <h2 class="titulo-card">Compras nos últimos 30 dias</h2>
+            <p class="muted sub">Valor bruto aprovado por dia</p>
+          </div>
+          <strong class="total-periodo">{{ totalDoPeriodo() | currency: 'BRL' }}</strong>
+        </div>
+        <div class="barras-dia" role="img" aria-label="Valor comprado por dia nos últimos 30 dias">
+          @for (dia of dias(); track $index) {
+            <div class="coluna" [matTooltip]="dia.texto">
+              <div class="barra-dia" [class.vazia]="!dia.temCompra" [style.height.%]="dia.altura"></div>
+            </div>
+          }
+        </div>
+        <div class="eixo-dias">
+          <span>{{ dias()[0]?.rotulo }}</span>
+          <span>{{ dias()[dias().length - 1]?.rotulo }}</span>
+        </div>
+      </div>
+    </mat-card>
+
+    <div class="duas-colunas">
+      <div class="coluna-bloco">
+        <div class="titulo-linha">
+          <h2 class="secao-titulo">Aguardando sua decisão</h2>
+          <a mat-button routerLink="/cerealista/requisicoes">Ver tudo</a>
+        </div>
+        <mat-card appearance="outlined">
+          @if (d.pendentesRecentes.length === 0) {
+            <div class="empty">
+              <mat-icon>task_alt</mat-icon>
+              <p>Nenhuma requisição aguardando análise.</p>
+            </div>
+          } @else {
+            <div class="table-wrap">
+              <table class="tabela">
+                <thead>
+                  <tr>
+                    <th>Produtor</th>
+                    <th>Produto</th>
+                    <th class="num">Quantidade</th>
+                    <th class="num">Preço/sc</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (r of d.pendentesRecentes; track r.id) {
+                    <tr class="clicavel" (click)="abrir(r)" tabindex="0" (keydown.enter)="abrir(r)">
+                      <td>
+                        <strong>{{ r.produtorNome }}</strong>
+                      </td>
+                      <td>{{ r.produtoNome }}</td>
+                      <td class="num">{{ r.quantidade | number: '1.0-2' }} sc</td>
+                      <td class="num">{{ r.precoSaca | currency: 'BRL' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </mat-card>
+      </div>
+
+      <div class="coluna-bloco">
+        <h2 class="secao-titulo">Compras por produto</h2>
+        <mat-card appearance="outlined">
+          <div class="card-pad barras">
+            @for (c of d.comprasPorProduto; track c.produto) {
+              <div class="barra">
+                <div class="barra-topo">
+                  <span>{{ c.produto }}</span>
+                  <strong class="num">{{ c.valor | currency: 'BRL' }}</strong>
+                </div>
+                <div class="trilho" role="img" [attr.aria-label]="c.produto + ': ' + c.sacas + ' sacas'">
+                  <div class="preenchimento" [style.width.%]="(c.valor / maiorValor()) * 100"></div>
+                </div>
+                <small class="muted">{{ c.sacas | number: '1.0-2' }} sc</small>
+              </div>
+            } @empty {
+              <div class="empty">
+                <mat-icon>bar_chart</mat-icon>
+                <p>As compras aparecem aqui depois da primeira aprovação.</p>
+              </div>
+            }
+          </div>
+        </mat-card>
+      </div>
+    </div>
+  }
+</div>

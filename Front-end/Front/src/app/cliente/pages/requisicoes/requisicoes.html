@@ -1,0 +1,99 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Minhas requisições</h1>
+      <p>Acompanhe cada venda solicitada e negocie o preço com a cerealista.</p>
+    </div>
+    <div class="acoes">
+      <a mat-flat-button routerLink="/cliente/produtos">
+        Nova venda
+      </a>
+    </div>
+  </div>
+
+  <mat-button-toggle-group
+    class="filtro"
+    [value]="status()"
+    (change)="filtrar($event.value)"
+    aria-label="Filtrar por situação"
+    hideSingleSelectionIndicator
+  >
+    @for (f of filtros; track f.rotulo) {
+      <mat-button-toggle [value]="f.valor">{{ f.rotulo }}</mat-button-toggle>
+    }
+  </mat-button-toggle-group>
+
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (erro(); as e) {
+    <p class="erro-form" role="alert">{{ e }}</p>
+  }
+
+  <mat-card appearance="outlined">
+    @if (!carregando() && itens().length === 0 && !erro()) {
+      <div class="empty">
+        <mat-icon>receipt_long</mat-icon>
+        <p>Nenhuma requisição encontrada.</p>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Produto</th>
+              <th class="num">Quantidade</th>
+              <th class="num">Preço/sc</th>
+              <th class="num">Valor bruto</th>
+              <th>Situação</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of itens(); track r.id) {
+              <tr class="clicavel" (click)="abrir(r)" tabindex="0" (keydown.enter)="abrir(r)">
+                <td>{{ r.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ r.produtoNome }}</td>
+                <td class="num">{{ r.quantidade | number: '1.0-2' }} sc</td>
+                <td class="num">{{ r.precoSaca | currency: 'BRL' }}</td>
+                <td class="num">{{ r.valorBruto | currency: 'BRL' }}</td>
+                <td>
+                  <app-status-chip [status]="r.status" />
+                  @if (temPropostaParaMim(r)) {
+                    <span class="chip-status st-PENDENTE" matTooltip="A cerealista enviou uma contra-proposta">
+                      <mat-icon inline>chat</mat-icon> Proposta
+                    </span>
+                  }
+                </td>
+                <td class="num">
+                  @if (r.status === 'PENDENTE') {
+                    <button mat-icon-button aria-label="Editar solicitação" (click)="editar(r); $event.stopPropagation()">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  }
+                  @if (r.status === 'PENDENTE' || r.status === 'RECUSADA') {
+                    <button mat-icon-button aria-label="Cancelar solicitação" (click)="cancelar(r); $event.stopPropagation()">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  }
+                  <button mat-icon-button aria-label="Ver detalhes" (click)="abrir(r); $event.stopPropagation()">
+                    <mat-icon>chevron_right</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <mat-paginator
+        [length]="total()"
+        [pageSize]="tamanho()"
+        [pageIndex]="pagina()"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="mudarPagina($event)"
+        aria-label="Páginas de requisições"
+      />
+    }
+  </mat-card>
+</div>

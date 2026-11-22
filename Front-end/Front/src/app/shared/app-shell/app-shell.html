@@ -1,0 +1,112 @@
+<mat-sidenav-container class="shell">
+  <mat-sidenav
+    #nav
+    class="shell-nav"
+    [mode]="mobile() ? 'over' : 'side'"
+    [opened]="!mobile()"
+    [attr.aria-label]="'Menu principal'"
+  >
+    <div class="nav-conteudo">
+      <a class="marca" [routerLink]="auth.rotaInicial()" aria-label="SafraLink, página inicial">
+        <img src="img/logo-creme.png" alt="SafraLink" height="30" />
+      </a>
+
+      <nav class="menu">
+        @for (grupo of grupos(); track $index) {
+          @if (grupo.titulo) {
+            <div class="grupo">{{ grupo.titulo }}</div>
+          }
+          @for (item of grupo.itens; track item.rota) {
+            <a
+              class="item"
+              [routerLink]="item.rota"
+              routerLinkActive="ativo"
+              [routerLinkActiveOptions]="{ exact: item.exato ?? false }"
+              (click)="mobile() && nav.close()"
+            >
+              <mat-icon>{{ item.icone }}</mat-icon>
+              <span>{{ item.rotulo }}</span>
+            </a>
+          }
+        }
+      </nav>
+
+      <div class="usuario">
+        <span class="avatar" aria-hidden="true">{{ iniciais() }}</span>
+        <div class="dados">
+          <strong>{{ auth.usuario()?.nome }}</strong>
+          <span>{{ rotuloPerfil() }}</span>
+        </div>
+        <button mat-icon-button class="sair" (click)="sair()" aria-label="Sair" matTooltip="Sair">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="area">
+    <header class="topo">
+      @if (mobile()) {
+        <button mat-icon-button (click)="nav.toggle()" aria-label="Abrir menu">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <img class="logo-topo" src="img/simbolo-verde.png" alt="SafraLink" height="26" />
+      } @else {
+        <span class="data">{{ hoje }}</span>
+      }
+      <span class="spacer"></span>
+
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="menuNotificacoes"
+        aria-label="Notificações"
+        [matBadge]="notificacoes.naoLidas()"
+        [matBadgeHidden]="notificacoes.naoLidas() === 0"
+        matBadgeColor="warn"
+        matBadgeSize="medium"
+      >
+        <mat-icon>notifications</mat-icon>
+      </button>
+      <mat-menu #menuNotificacoes="matMenu" class="menu-notif" xPosition="before">
+        <div class="notif-topo" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" tabindex="-1">
+          <strong>Notificações</strong>
+          <span class="spacer"></span>
+          @if (notificacoes.naoLidas() > 0) {
+            <button mat-button (click)="notificacoes.marcarTodasComoLidas()">Marcar como lidas</button>
+          }
+          @if (notificacoes.recentes().length > 0) {
+            <button mat-button (click)="notificacoes.limpar()">Limpar</button>
+          }
+        </div>
+        @for (n of notificacoes.recentes().slice(0, 8); track n.id) {
+          <button mat-menu-item [class.nao-lida]="!n.lida" (click)="notificacoes.marcarComoLida(n.id)">
+            <span class="notif-texto">
+              {{ n.mensagem }}
+              <small class="muted">{{ n.criadoEm | date: 'dd/MM HH:mm' }}</small>
+            </span>
+          </button>
+        } @empty {
+          <div class="notif-vazio muted">Nenhuma notificação por enquanto.</div>
+        }
+      </mat-menu>
+
+      <button mat-icon-button [matMenuTriggerFor]="menuUsuario" aria-label="Minha conta" class="botao-avatar">
+        <span class="avatar pequeno">{{ iniciais() }}</span>
+      </button>
+      <mat-menu #menuUsuario="matMenu" xPosition="before">
+        <a mat-menu-item [routerLink]="rotaPerfil()">
+          <mat-icon>person</mat-icon>
+          <span>Meu perfil</span>
+        </a>
+        <button mat-menu-item (click)="sair()">
+          <mat-icon>logout</mat-icon>
+          <span>Sair</span>
+        </button>
+      </mat-menu>
+    </header>
+
+    <main class="conteudo">
+      <ng-content />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

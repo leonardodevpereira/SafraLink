@@ -1,0 +1,6 @@
+safralink:
+  dados-demo: true
+
+logging:
+  level:
+    br.com.safralink: DEBUG

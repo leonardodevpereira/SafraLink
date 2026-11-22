@@ -1,0 +1,14 @@
+# Build
+safralink-api/target/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# Ambiente local
+.env
+*.log

@@ -1,0 +1,37 @@
+<div class="tela">
+  <aside class="marca" aria-hidden="false">
+    <img class="logo" src="img/logo-creme.png" alt="SafraLink" height="36" />
+
+    <div class="texto">
+      <p class="selo">O campo mais próximo.</p>
+      <h2>Saldo, preço e venda de grãos em um só lugar.</h2>
+      <ul>
+        <li>
+          <strong>Saldo em tempo real</strong>
+          <span>Veja quantas sacas você tem de cada produto, sem ligar para ninguém.</span>
+        </li>
+        <li>
+          <strong>Venda sem deslocamento</strong>
+          <span>Solicite, negocie o preço e acompanhe a aprovação pelo celular.</span>
+        </li>
+        <li>
+          <strong>Tudo registrado</strong>
+          <span>Entregas, descontos e transações guardados com histórico completo.</span>
+        </li>
+      </ul>
+    </div>
+
+    <img class="marca-dagua" src="img/simbolo-creme.png" alt="" />
+  </aside>
+
+  <main class="formulario">
+    <div class="conteudo">
+      <img class="logo-mobile" src="img/logo-verde.png" alt="SafraLink" height="32" />
+      <h1>{{ titulo() }}</h1>
+      @if (subtitulo()) {
+        <p class="sub">{{ subtitulo() }}</p>
+      }
+      <ng-content />
+    </div>
+  </main>
+</div>

@@ -1,0 +1,69 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Vender</h1>
+      <p>Escolha o produto, informe a quantidade e envie a solicitação para a cerealista.</p>
+    </div>
+    <div class="acoes">
+      <button
+        mat-stroked-button
+        (click)="personalizada()"
+        [disabled]="opcoes().length === 0"
+        matTooltip="Escolha o produto, defina o preço que quer e deixe um recado para a cerealista"
+      >
+        Solicitação personalizada
+      </button>
+    </div>
+  </div>
+
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (erro(); as e) {
+    <p class="erro-form" role="alert">{{ e }}</p>
+  }
+
+  @if (!carregando() && !erro()) {
+    <div class="grid">
+      @for (p of produtos(); track p.id) {
+        @let saldo = disponivel().get(p.id) ?? 0;
+        <mat-card appearance="outlined" class="produto" [class.indisponivel]="!podeVender(p)">
+          <div class="cabeca">
+            <app-grao-icon [grao]="p.grao" />
+            <div class="nome">
+              <strong>{{ p.nome }}</strong>
+              <span class="muted">Mercado {{ p.mercado === 'INTERNO' ? 'interno' : 'externo' }}</span>
+            </div>
+          </div>
+
+          <div class="preco">
+            @if (p.precoAtual !== null && p.precoAtual !== undefined) {
+              <span class="valor">{{ p.precoAtual | currency: 'BRL' }}</span>
+              <span class="muted">por saca</span>
+            } @else {
+              <span class="muted">Preço ainda não definido</span>
+            }
+          </div>
+
+          <dl class="dados">
+            <div>
+              <dt>Seu saldo disponível</dt>
+              <dd class="num">{{ saldo | number: '1.0-2' }} sc</dd>
+            </div>
+            <div>
+              <dt>Cerealista compra até</dt>
+              <dd class="num">{{ p.quantidadeDisponivel | number: '1.0-2' }} sc</dd>
+            </div>
+          </dl>
+
+          <button mat-flat-button class="full" [disabled]="!podeVender(p)" (click)="vender(p)">
+            {{ saldo > 0 ? 'Solicitar venda' : 'Sem saldo para vender' }}
+          </button>
+        </mat-card>
+      }
+    </div>
+    <p class="muted nota">
+      Só é possível vender o que você tem em saldo e que ainda não está em outra solicitação pendente.
+    </p>
+  }
+</div>

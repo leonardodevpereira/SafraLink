@@ -1,0 +1,24 @@
+.filtro {
+  align-self: flex-start;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.tabela th,
+.tabela td {
+  padding-inline: 12px;
+}
+
+.acoes-linha {
+  white-space: nowrap;
+
+  button {
+    min-width: 0;
+    height: 36px;
+    padding: 0 14px;
+  }
+
+  button + button {
+    margin-left: 6px;
+  }
+}

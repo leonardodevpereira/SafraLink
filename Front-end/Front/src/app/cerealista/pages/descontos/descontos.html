@@ -1,0 +1,77 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Descontos</h1>
+      <p>Armazenagem, transporte e outros. Os ativos são aplicados automaticamente quando você aprova uma venda.</p>
+    </div>
+    <div class="acoes">
+      <button mat-flat-button (click)="abrir()">
+        Novo desconto
+      </button>
+    </div>
+  </div>
+
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (erro(); as e) {
+    <p class="erro-form" role="alert">{{ e }}</p>
+  }
+
+  <mat-card appearance="outlined">
+    @if (!carregando() && descontos().length === 0 && !erro()) {
+      <div class="empty">
+        <mat-icon>percent</mat-icon>
+        <p>Nenhum desconto cadastrado. As vendas serão aprovadas pelo valor bruto.</p>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Categoria</th>
+              <th>Como é calculado</th>
+              <th class="num">Valor</th>
+              <th>Ativo</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (d of descontos(); track d.id) {
+              <tr>
+                <td>
+                  <strong>{{ d.nome }}</strong>
+                </td>
+                <td>{{ rotuloCategoria(d) }}</td>
+                <td>{{ d.forma === 'PERCENTUAL' ? 'Percentual sobre o valor bruto' : 'Valor fixo por saca' }}</td>
+                <td class="num">
+                  @if (d.forma === 'PERCENTUAL') {
+                    {{ d.valor | number: '1.0-2' }}%
+                  } @else {
+                    {{ d.valor | currency: 'BRL' }}/sc
+                  }
+                </td>
+                <td>
+                  <mat-slide-toggle
+                    [checked]="d.ativo"
+                    (change)="alternar(d, $event.checked)"
+                    [attr.aria-label]="'Ativar ' + d.nome"
+                  />
+                </td>
+                <td class="num">
+                  <button mat-icon-button aria-label="Editar desconto" (click)="abrir(d)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button aria-label="Excluir desconto" (click)="excluir(d)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </mat-card>
+</div>

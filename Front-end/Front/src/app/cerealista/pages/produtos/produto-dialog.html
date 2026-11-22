@@ -1,0 +1,40 @@
+<h2 mat-dialog-title>{{ edicao ? 'Editar produto' : 'Novo produto' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+  <mat-dialog-content>
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Nome</mat-label>
+      <input matInput formControlName="nome" maxlength="60" placeholder="Ex.: Soja Externo" cdkFocusInitial />
+      @if (form.controls.nome.touched && form.controls.nome.invalid) {
+        <mat-error>Informe o nome do produto.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Grão</mat-label>
+      <mat-select formControlName="grao">
+        @for (g of graos; track g.valor) {
+          <mat-option [value]="g.valor">{{ g.rotulo }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Mercado</mat-label>
+      <mat-select formControlName="mercado">
+        @for (m of mercados; track m.valor) {
+          <mat-option [value]="m.valor">{{ m.rotulo }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (erro(); as e) {
+      <p class="erro-form" role="alert">{{ e }}</p>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Cancelar</button>
+    <button mat-flat-button type="submit" [disabled]="salvando()">{{ salvando() ? 'Salvando…' : 'Salvar' }}</button>
+  </mat-dialog-actions>
+</form>

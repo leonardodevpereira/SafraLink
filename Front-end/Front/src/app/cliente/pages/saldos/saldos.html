@@ -1,0 +1,71 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Meus saldos</h1>
+      <p>Quanto você tem de cada produto na cerealista, em sacas e em reais.</p>
+    </div>
+    <div class="acoes">
+      <a mat-flat-button routerLink="/cliente/produtos">
+        Solicitar venda
+      </a>
+    </div>
+  </div>
+
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (erro(); as e) {
+    <p class="erro-form" role="alert">{{ e }}</p>
+  }
+
+  @if (!carregando() && !erro()) {
+    <mat-card appearance="outlined">
+      <div class="table-wrap">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th class="num">Saldo (sc)</th>
+              <th class="num">Reservado em pedidos</th>
+              <th class="num">Disponível p/ venda</th>
+              <th class="num">Preço/sc hoje</th>
+              <th class="num">Valor estimado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of saldos(); track s.produtoId) {
+              <tr>
+                <td>{{ s.produtoNome }}</td>
+                <td class="num">{{ s.quantidade | number: '1.0-2' }}</td>
+                <td class="num">{{ s.reservado | number: '1.0-2' }}</td>
+                <td class="num">{{ s.disponivelParaVenda | number: '1.0-2' }}</td>
+                <td class="num">
+                  @if (s.precoAtual !== null && s.precoAtual !== undefined) {
+                    {{ s.precoAtual | currency: 'BRL' }}
+                  } @else {
+                    <span class="muted">—</span>
+                  }
+                </td>
+                <td class="num">{{ s.valorEstimado | currency: 'BRL' }}</td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Total</td>
+              <td class="num">{{ totalSacas() | number: '1.0-2' }}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="num">{{ totalValor() | currency: 'BRL' }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </mat-card>
+    <p class="muted nota">
+      O saldo é creditado quando a cerealista registra suas entregas. O valor estimado usa o preço de hoje e não
+      considera descontos de armazenagem e transporte.
+    </p>
+  }
+</div>

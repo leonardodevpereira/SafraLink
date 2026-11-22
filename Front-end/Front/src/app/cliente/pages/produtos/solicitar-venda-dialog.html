@@ -1,0 +1,66 @@
+<h2 mat-dialog-title>Solicitar venda de {{ data.produto.nome }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="confirmar()" novalidate>
+  <mat-dialog-content>
+    <p class="muted">
+      Saldo disponível para venda: <strong>{{ data.disponivel | number: '1.0-2' }} sc</strong>
+    </p>
+
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Quantidade (sacas)</mat-label>
+      <input matInput type="number" step="0.01" min="0.01" inputmode="decimal" formControlName="quantidade" cdkFocusInitial />
+      <button mat-button matSuffix type="button" (click)="usarSaldoTotal()" matTooltip="Usar todo o saldo disponível">
+        Máx.
+      </button>
+      @if (form.controls.quantidade.touched && form.controls.quantidade.invalid) {
+        <mat-error>
+          @if (form.controls.quantidade.hasError('max')) {
+            A quantidade não pode passar do saldo disponível.
+          } @else {
+            Informe uma quantidade maior que zero.
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Preço por saca (R$)</mat-label>
+      <input matInput type="number" step="0.01" min="0.01" inputmode="decimal" formControlName="precoSaca" />
+      <mat-hint>
+        @if (precoDiferente()) {
+          Preço do dia: {{ data.produto.precoAtual | currency: 'BRL' }}. A cerealista poderá aceitar ou contrapropor.
+        } @else {
+          Preço do dia. Você pode propor outro valor.
+        }
+      </mat-hint>
+      @if (form.controls.precoSaca.touched && form.controls.precoSaca.invalid) {
+        <mat-error>Informe um preço maior que zero.</mat-error>
+      }
+    </mat-form-field>
+
+    @if (acimaDaCerealista()) {
+      <p class="aviso">
+        <mat-icon>info</mat-icon>
+        A cerealista informou que compra até {{ data.produto.quantidadeDisponivel | number: '1.0-2' }} sc deste produto.
+        Você pode enviar, mas a aprovação depende dessa disponibilidade.
+      </p>
+    }
+
+    <div class="resumo" aria-live="polite">
+      <span class="muted">Valor bruto estimado</span>
+      <strong>{{ total() !== null ? (total() | currency: 'BRL') : '—' }}</strong>
+      <small class="muted">Descontos de armazenagem e transporte são aplicados na aprovação.</small>
+    </div>
+
+    @if (erro(); as e) {
+      <p class="erro-form" role="alert">{{ e }}</p>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Cancelar</button>
+    <button mat-flat-button type="submit" [disabled]="enviando()">
+      {{ enviando() ? 'Enviando…' : 'Confirmar solicitação' }}
+    </button>
+  </mat-dialog-actions>
+</form>

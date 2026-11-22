@@ -1,0 +1,36 @@
+SAFRALINK | ARQUIVOS PARA APLICACAO
+
+Referencia: ultima prancha aprovada, com simbolo de tres graos e secao tipografica.
+Os elementos foram extraidos da assinatura principal da prancha, sem trocar a fonte do lettering.
+As cores das exportacoes foram uniformizadas conforme a paleta aprovada.
+
+1. PNG_Transparente
+Logotipo com assinatura (tagline), logotipo sem assinatura e simbolo isolado.
+Cores: verde #244B3A, ocre #B98A2E, creme #F5F0E6 e grafite #282924.
+Logos: 3000 px de largura, altura proporcional.
+Simbolo: 1024 x 1024 px com area livre ao redor.
+Transparencia verdadeira (canal alfa). Use para sobrepor em outros fundos.
+Na versao sem tagline, o nome foi centralizado verticalmente em relacao ao simbolo.
+
+2. JPEG_Fundo
+Mesmas versoes em JPEG.
+JPEG NAO aceita transparencia: as versoes verde/ocre/grafite tem fundo branco;
+a versao creme tem fundo verde. O fundo esta indicado no nome do arquivo.
+
+3. SVG_Contornos
+Arquivos com curvas vetoriais obtidas por contorno da imagem apresentada.
+Letras convertidas em contornos: nao dependem de fontes instaladas.
+Nao sao o arquivo-mestre original nem uma reconstrucao tipografica manual.
+Para impressao de precisao, sinalizacao ou registro, conferir e refinar os contornos.
+
+4. Favicon
+PNG transparentes: 16, 32, 48, 64, 128, 256 e 512 px.
+ICO com resolucoes 16, 32, 48, 64, 128 e 256 px.
+SVG vetorial adicional e icone PNG 180 x 180 px.
+Usar somente o simbolo em favicons, sem nome e sem tagline.
+Validar a legibilidade no tamanho real de uso.
+
+Observacao de qualidade
+A origem e uma prancha raster gerada conceitualmente, e nao um arquivo vetorial mestre.
+Os arquivos de alta resolucao foram exportados a partir dos contornos extraidos;
+aumentar a resolucao nao recupera detalhes ausentes da imagem original.

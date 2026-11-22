@@ -1,0 +1,21 @@
+.abas {
+  align-self: flex-start;
+}
+
+.tabela td.ver {
+  white-space: nowrap;
+  color: var(--mat-sys-primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-align: right;
+
+  mat-icon {
+    vertical-align: middle;
+  }
+}
+
+@media (max-width: 1280px) {
+  .ver-rotulo {
+    display: none;
+  }
+}

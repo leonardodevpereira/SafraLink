@@ -1,0 +1,93 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Auditoria</h1>
+      <p>Registro de quem fez o quê e quando nas operações críticas do sistema.</p>
+    </div>
+  </div>
+
+  <form class="filters" [formGroup]="filtros" (ngSubmit)="aplicar()">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Ação</mat-label>
+      <mat-select formControlName="acao">
+        <mat-option [value]="null">Todas</mat-option>
+        @for (a of acoes; track a.valor) {
+          <mat-option [value]="a.valor">{{ a.rotulo }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>De</mat-label>
+      <input matInput type="date" formControlName="de" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Até</mat-label>
+      <input matInput type="date" formControlName="ate" />
+    </mat-form-field>
+    <div class="row">
+      <button mat-flat-button type="submit">Filtrar</button>
+      <button mat-button type="button" (click)="limpar()">Limpar</button>
+    </div>
+  </form>
+
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (erro(); as e) {
+    <p class="erro-form" role="alert">{{ e }}</p>
+  }
+
+  <mat-card appearance="outlined">
+    @if (!carregando() && itens().length === 0 && !erro()) {
+      <div class="empty">
+        <mat-icon>shield</mat-icon>
+        <p>Nenhum registro encontrado.</p>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Data e hora</th>
+              <th>Usuário</th>
+              <th>Ação</th>
+              <th>Detalhes</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (a of itens(); track a.id) {
+              <tr>
+                <td class="nowrap">{{ a.criadoEm | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+                <td>
+                  {{ a.usuarioNome || a.usuarioEmail || '—' }}
+                  @if (a.usuarioNome && a.usuarioEmail) {
+                    <br /><span class="muted">{{ a.usuarioEmail }}</span>
+                  }
+                </td>
+                <td>
+                  <span class="chip-status" [class.st-RECUSADA]="a.acao === 'LOGIN_FALHA' || a.acao === 'RECUSA'">
+                    {{ rotulo(a.acao) }}
+                  </span>
+                </td>
+                <td class="muted">
+                  {{ a.detalhes || '—' }}
+                  @if (a.entidade && a.entidadeId) {
+                    <small>({{ a.entidade }} #{{ a.entidadeId }})</small>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <mat-paginator
+        [length]="total()"
+        [pageSize]="tamanho()"
+        [pageIndex]="pagina()"
+        [pageSizeOptions]="[20, 50, 100]"
+        (page)="mudarPagina($event)"
+        aria-label="Páginas da auditoria"
+      />
+    }
+  </mat-card>
+</div>

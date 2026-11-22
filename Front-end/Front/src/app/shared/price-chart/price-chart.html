@@ -1,0 +1,22 @@
+@if (grafico(); as g) {
+  <svg [attr.viewBox]="'0 0 ' + largura + ' ' + altura" role="img" [attr.aria-label]="descricao()" class="grafico">
+    @for (linha of g.grade; track linha.y) {
+      <line class="grade" [attr.x1]="g.x0" [attr.x2]="g.x1" [attr.y1]="linha.y" [attr.y2]="linha.y" />
+      <text class="eixo" [attr.x]="g.x0 - 8" [attr.y]="linha.y + 4" text-anchor="end">{{ linha.rotulo }}</text>
+    }
+    <path class="area" [attr.d]="g.area" />
+    <path class="linha" [attr.d]="g.linha" />
+    @for (p of g.posicoes; track $index) {
+      <circle class="ponto" [attr.cx]="p.x" [attr.cy]="p.y" r="3.5">
+        <title>{{ p.texto }}</title>
+      </circle>
+    }
+    @for (r of g.eixoX; track r.x) {
+      <text class="eixo" [attr.x]="r.x" [attr.y]="g.yBase + 20" text-anchor="middle">{{ r.rotulo }}</text>
+    }
+  </svg>
+} @else {
+  <div class="empty">
+    <p>Ainda não há preços registrados neste período.</p>
+  </div>
+}

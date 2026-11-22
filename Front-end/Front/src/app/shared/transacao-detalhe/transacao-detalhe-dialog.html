@@ -1,0 +1,170 @@
+<h2 mat-dialog-title class="titulo">
+  <span>Transação #{{ t.id }}</span>
+  <app-status-chip [status]="t.status" />
+</h2>
+
+<mat-dialog-content>
+  <mat-button-toggle-group
+    class="abas"
+    [value]="aba()"
+    (change)="aba.set($event.value)"
+    aria-label="Conteúdo"
+    hideSingleSelectionIndicator
+  >
+    <mat-button-toggle value="detalhes">Detalhes</mat-button-toggle>
+    <mat-button-toggle value="contrato">Contrato de venda</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  @if (aba() === 'detalhes') {
+    <div class="resumo">
+      <div>
+        <span class="rotulo">Produtor</span>
+        <strong>{{ t.produtorNome }}</strong>
+      </div>
+      <div>
+        <span class="rotulo">CPF</span>
+        <strong class="tab">{{ t.produtorCpf | documento }}</strong>
+      </div>
+      <div>
+        <span class="rotulo">Produto</span>
+        <strong>{{ t.produtoNome }}</strong>
+      </div>
+      <div>
+        <span class="rotulo">Quantidade</span>
+        <strong class="tab">{{ t.quantidade | number: '1.0-2' }} sc</strong>
+      </div>
+      <div>
+        <span class="rotulo">Preço por saca</span>
+        <strong class="tab">{{ t.precoSaca | currency: 'BRL' }}</strong>
+      </div>
+      <div>
+        <span class="rotulo">Requisição de origem</span>
+        <strong>#{{ t.requisicaoId }}</strong>
+      </div>
+      <div>
+        <span class="rotulo">Aprovada em</span>
+        <strong>{{ t.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</strong>
+      </div>
+      <div>
+        <span class="rotulo">Processada em</span>
+        <strong>
+          @if (t.dataProcessamento) {
+            {{ t.dataProcessamento | date: 'dd/MM/yyyy HH:mm' }}
+          } @else {
+            <span class="muted">Aguardando</span>
+          }
+        </strong>
+      </div>
+    </div>
+
+    <h3 class="secao-titulo">Valores</h3>
+    <div class="valores">
+      <div class="linha">
+        <span>Valor bruto</span>
+        <span class="tab">{{ t.valorBruto | currency: 'BRL' }}</span>
+      </div>
+      @for (d of t.descontos; track d.nome) {
+        <div class="linha muted">
+          <span>Desconto: {{ d.nome }}</span>
+          <span class="tab">− {{ d.valor | currency: 'BRL' }}</span>
+        </div>
+      } @empty {
+        <div class="linha muted">
+          <span>Descontos</span>
+          <span>Nenhum</span>
+        </div>
+      }
+      <div class="linha total">
+        <span>Valor líquido</span>
+        <span class="tab">{{ t.valorLiquido | currency: 'BRL' }}</span>
+      </div>
+    </div>
+  } @else {
+    <article class="contrato" #contrato>
+      <h1>Contrato de compra e venda de grãos</h1>
+      <p class="numero">Nº {{ numeroContrato() }}</p>
+
+      <p>
+        <strong>COMPRADORA:</strong>
+        {{ compradora }}, inscrita no CNPJ sob o nº
+        {{ t.compradoraDocumento | documento }}{{ sedeCerealista() }}, doravante denominada COMPRADORA.
+      </p>
+      <p>
+        <strong>VENDEDOR(A):</strong>
+        {{ t.produtorNome }}, inscrito(a) no CPF sob o nº {{ t.produtorCpf | documento }}, doravante denominado(a)
+        VENDEDOR(A).
+      </p>
+      <p>As partes acima identificadas celebram o presente contrato de compra e venda de grãos, mediante as cláusulas a seguir.</p>
+
+      <h2>Cláusula 1ª — Do objeto</h2>
+      <p>
+        O VENDEDOR vende à COMPRADORA {{ t.quantidade | number: '1.0-2' }} sacas de {{ t.produtoNome }}, já entregues e
+        registradas no saldo do VENDEDOR na plataforma SafraLink (requisição nº {{ t.requisicaoId }}).
+      </p>
+
+      <h2>Cláusula 2ª — Do preço</h2>
+      <p>
+        O preço ajustado é de {{ t.precoSaca | currency: 'BRL' }} por saca, perfazendo o valor bruto de
+        {{ t.valorBruto | currency: 'BRL' }}.
+      </p>
+
+      <h2>Cláusula 3ª — Dos descontos</h2>
+      @if (t.descontos.length > 0) {
+        <p>Sobre o valor bruto incidem os descontos abaixo, aplicados conforme as regras vigentes na data da aprovação:</p>
+        <ul>
+          @for (d of t.descontos; track d.nome) {
+            <li>{{ d.nome }}: {{ d.valor | currency: 'BRL' }}</li>
+          }
+        </ul>
+        <p>Total de descontos: {{ t.totalDescontos | currency: 'BRL' }}.</p>
+      } @else {
+        <p>Não foram aplicados descontos sobre esta venda.</p>
+      }
+
+      <h2>Cláusula 4ª — Do valor líquido</h2>
+      <p>
+        O valor líquido a ser pago ao VENDEDOR é de {{ t.valorLiquido | currency: 'BRL' }}.
+        @if (t.dataProcessamento) {
+          A entrega e o pagamento foram concluídos em {{ t.dataProcessamento | date: "dd/MM/yyyy 'às' HH:mm" }}.
+        } @else {
+          O pagamento será realizado conforme combinado entre as partes.
+        }
+      </p>
+
+      <h2>Cláusula 5ª — Do registro</h2>
+      <p>
+        A presente venda foi aprovada eletronicamente pela COMPRADORA em {{ t.criadoEm | date: "dd/MM/yyyy 'às' HH:mm" }} e
+        permanece registrada, com trilha de auditoria, na plataforma SafraLink.
+      </p>
+
+      <p class="local">
+        {{ prefixoLocal() }}{{ t.criadoEm | date: "d 'de' MMMM 'de' y" }}.
+      </p>
+
+      <div class="assinaturas">
+        <div class="assinatura">
+          {{ compradora }}<br />
+          <small>COMPRADORA</small>
+        </div>
+        <div class="assinatura">
+          {{ t.produtorNome }}<br />
+          <small>VENDEDOR(A) · CPF {{ t.produtorCpf | documento }}</small>
+        </div>
+      </div>
+
+      <p class="nota">
+        Documento gerado automaticamente pelo SafraLink a partir dos dados da transação aprovada. Para valer como contrato
+        assinado, deve ser assinado pelas partes quando exigido.
+      </p>
+    </article>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Fechar</button>
+  @if (aba() === 'detalhes') {
+    <button mat-flat-button (click)="aba.set('contrato')">Ver contrato de venda</button>
+  } @else {
+    <button mat-flat-button (click)="imprimir()">Imprimir / salvar em PDF</button>
+  }
+</mat-dialog-actions>

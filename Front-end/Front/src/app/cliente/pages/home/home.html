@@ -1,0 +1,159 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Olá, {{ primeiroNome() }}</h1>
+      <p>Resumo da sua safra e dos preços de hoje.</p>
+    </div>
+    <div class="acoes">
+      <a mat-flat-button routerLink="/cliente/produtos">Solicitar venda</a>
+    </div>
+  </div>
+
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (erro(); as e) {
+    <p class="erro-form" role="alert">{{ e }}</p>
+  }
+
+  @if (dados(); as d) {
+    <div class="resumo-geral">
+      <div>
+        <span class="rotulo">Saldo total</span>
+        <strong>{{ d.saldoTotalSacas | number: '1.0-2' }} sc</strong>
+      </div>
+      <div>
+        <span class="rotulo">Valor estimado</span>
+        <strong>{{ d.valorEstimadoTotal | currency: 'BRL' }}</strong>
+      </div>
+      <div>
+        <span class="rotulo">Aguardando análise</span>
+        <strong [class.pendente]="d.requisicoesPendentes > 0">
+          {{ d.requisicoesPendentes }}
+          {{ d.requisicoesPendentes === 1 ? 'requisição' : 'requisições' }}
+        </strong>
+      </div>
+    </div>
+
+    <h2 class="secao-titulo">Seu saldo por produto</h2>
+    <div class="grid-kpi">
+      @for (g of graos(); track g.grao) {
+        <mat-card appearance="outlined" class="grao">
+          <div class="cabeca">
+            <app-grao-icon [grao]="g.grao" />
+            <strong>{{ g.nome }}</strong>
+          </div>
+          <div class="kpi">
+            <span class="kpi-rotulo">Saldo</span>
+            <span class="kpi-valor">{{ g.saldo | number: '1.0-2' }} <small>sc</small></span>
+            <span class="kpi-nota">≈ {{ g.valor | currency: 'BRL' }} pelo preço de hoje</span>
+          </div>
+          <ul class="mercados">
+            @for (m of g.mercados; track m.rotulo) {
+              <li>
+                <span>{{ m.rotulo }}</span>
+                <strong>{{ m.saldo | number: '1.0-2' }} sc</strong>
+              </li>
+            }
+          </ul>
+          @if (g.reservado > 0) {
+            <div class="reservado">{{ g.reservado | number: '1.0-2' }} sc em vendas pendentes</div>
+          }
+        </mat-card>
+      }
+    </div>
+
+    <h2 class="secao-titulo">Preços do dia</h2>
+    <div class="precos">
+      @for (p of d.precos; track p.id) {
+        @let v = p.variacaoPercentual;
+        <mat-card appearance="outlined" class="preco">
+          <div class="cabeca">
+            <app-grao-icon [grao]="p.grao" />
+            <div class="nome">
+              <strong>{{ p.nome }}</strong>
+              <span class="muted">Mercado {{ p.mercado === 'INTERNO' ? 'interno' : 'externo' }}</span>
+            </div>
+          </div>
+          @if (p.precoAtual !== null && p.precoAtual !== undefined) {
+            <div class="valor">{{ p.precoAtual | currency: 'BRL' }}<small>/sc</small></div>
+            @if (v !== null && v !== undefined) {
+              <div class="variacao" [class.var-positiva]="v >= 0" [class.var-negativa]="v < 0">
+                <mat-icon inline>{{ v >= 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
+                {{ v | number: '1.1-2' }}% vs. anterior
+              </div>
+            }
+          } @else {
+            <div class="muted">Preço ainda não definido</div>
+          }
+        </mat-card>
+      }
+    </div>
+
+    <h2 class="secao-titulo">Seus saldos</h2>
+    <mat-card appearance="outlined">
+      <div class="table-wrap">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th class="num">Saldo</th>
+              <th class="num">Disponível para venda</th>
+              <th class="num">Valor estimado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of d.saldos; track s.produtoId) {
+              <tr>
+                <td>
+                  <strong>{{ s.produtoNome }}</strong>
+                </td>
+                <td class="num">{{ s.quantidade | number: '1.0-2' }} sc</td>
+                <td class="num">{{ s.disponivelParaVenda | number: '1.0-2' }} sc</td>
+                <td class="num">{{ s.valorEstimado | currency: 'BRL' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </mat-card>
+
+    <h2 class="secao-titulo">Últimas propostas</h2>
+    <mat-card appearance="outlined">
+      @if (d.ultimasRequisicoes.length === 0) {
+        <div class="empty">
+          <mat-icon>receipt_long</mat-icon>
+          <p>Você ainda não solicitou nenhuma venda.</p>
+          <a mat-stroked-button routerLink="/cliente/produtos">Solicitar a primeira venda</a>
+        </div>
+      } @else {
+        <div class="table-wrap">
+          <table class="tabela">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Produto</th>
+                <th class="num">Quantidade</th>
+                <th class="num">Preço/sc</th>
+                <th>Situação</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (r of d.ultimasRequisicoes; track r.id) {
+                <tr class="clicavel" (click)="abrir(r)" tabindex="0" (keydown.enter)="abrir(r)">
+                  <td>{{ r.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</td>
+                  <td>
+                    <strong>{{ r.produtoNome }}</strong>
+                  </td>
+                  <td class="num">{{ r.quantidade | number: '1.0-2' }} sc</td>
+                  <td class="num">{{ r.precoSaca | currency: 'BRL' }}</td>
+                  <td><app-status-chip [status]="r.status" /></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </mat-card>
+  }
+</div>

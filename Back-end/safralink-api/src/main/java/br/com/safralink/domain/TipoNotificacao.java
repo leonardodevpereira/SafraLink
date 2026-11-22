@@ -1,0 +1,12 @@
+package br.com.safralink.domain;
+
+public enum TipoNotificacao {
+    REQUISICAO_CRIADA,
+    REQUISICAO_APROVADA,
+    REQUISICAO_RECUSADA,
+    REQUISICAO_PROCESSADA,
+    CONTRA_PROPOSTA,
+    PRECO_ATUALIZADO,
+    ENTREGA_REGISTRADA,
+    NOVO_PRODUTOR
+}

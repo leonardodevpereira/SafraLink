@@ -1,0 +1,14 @@
+package br.com.safralink;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+
+@SpringBootApplication(exclude = UserDetailsServiceAutoConfiguration.class)
+@ConfigurationPropertiesScan
+public class SafralinkApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(SafralinkApplication.class, args);
+    }
+}

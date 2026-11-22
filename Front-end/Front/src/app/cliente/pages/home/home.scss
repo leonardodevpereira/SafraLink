@@ -1,0 +1,148 @@
+.kpi-valor small {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.resumo-geral {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 36px;
+  padding: 14px 20px;
+  border: 1px solid var(--sl-line);
+  border-radius: 12px;
+  background: #ffffff;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .rotulo {
+    font-size: 0.6875rem;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  strong {
+    font-size: 1.0625rem;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pendente {
+    color: var(--mat-sys-tertiary);
+  }
+}
+
+.grao {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  .cabeca {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    strong {
+      font-size: 1.0625rem;
+      font-weight: 650;
+    }
+  }
+}
+
+.mercados {
+  list-style: none;
+  margin: 0;
+  padding: 10px 12px;
+  display: grid;
+  gap: 6px;
+  border-radius: 8px;
+  background: var(--mat-sys-surface-container-low);
+  font-size: 0.875rem;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  span {
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  strong {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.reservado {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--mat-sys-tertiary);
+}
+
+.precos {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.preco {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .cabeca {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nome {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+
+    strong {
+      font-weight: 600;
+    }
+
+    span {
+      font-size: 0.8125rem;
+    }
+  }
+
+  .valor {
+    font-size: 1.625rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+
+    small {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--mat-sys-on-surface-variant);
+      margin-left: 2px;
+    }
+  }
+
+  .variacao {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+
+    mat-icon {
+      vertical-align: middle;
+    }
+  }
+}
