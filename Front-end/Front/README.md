@@ -39,8 +39,3 @@ Rotas: `/auth/*`, `/cliente/*` (perfil PRODUTOR), `/cerealista/*` (perfil CEREAL
 - As notificações (RF05) são consultadas a cada 20 s e aparecem como aviso (toast) e no sino.
 - Exportações (Excel/CSV) baixam o arquivo gerado pela API, no escopo do perfil logado.
 - Contas de cerealista não têm cadastro público; use as contas de demonstração do perfil `dev` da API.
-
-## Pendências
-
-- Paleta: o tema Material está em ciano/laranja (decisão do projeto), mas a identidade visual (logos) é verde/ocre e o pitch usa azul-petróleo/laranja. Decidir e, se for o caso, trocar os tokens em `src/styles.scss`.
-- Tela de gráficos de produção (`producao`): depende de RF e caso de uso.

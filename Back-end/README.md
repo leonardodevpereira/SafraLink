@@ -115,8 +115,4 @@ Erros seguem o formato `{ timestamp, status, erro, mensagem, campos? }`. A tabel
 - **Autenticação HTTP Basic** (enunciado do Projeto Integrador): e-mail e senha a cada requisição, sem token. Os usuários ficam no banco (BCrypt) em vez de em memória, porque cada conta tem dados próprios (saldos, vendas). 401 = sem credencial/credencial inválida; 403 = sem permissão para o papel.
 - **Flyway em todos os ambientes**, com `ddl-auto: validate`: o mesmo script cria o banco no dev e na produção, evitando divergência.
 - **E-mail de recuperação de senha** é simulado (o link aparece no log do servidor). Para produção, implemente `EmailService` com SMTP.
-- **Relatórios** saem em CSV (abre direto no Excel). PDF fica para uma próxima etapa.
-
-## Fora do escopo desta versão
-
-PDF nos relatórios, SMS/e-mail de notificação, integração de clima, gráficos de produção, rate limiting no login e deploy em nuvem.
+- **Relatórios** saem em CSV (abre direto no Excel).

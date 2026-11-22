@@ -44,12 +44,7 @@ Para quem vai avaliar o projeto: veja o **[AVALIACAO.md](AVALIACAO.md)** (links,
 | RF05 notificações | sino e toast no `AppShell` |
 | RF06 a RF08, RF13, RF14 dashboard, saldos, grid, preços históricos, quantidade disponível | `cliente/` |
 | RF09 a RF12 solicitar venda, contra-proposta, requisições, histórico | `cliente/`, `shared/requisicao-detalhe` |
-| RF15, RF24 relatórios (Excel/CSV) | Histórico (produtor), Transações e Produtores (cerealista). PDF pendente |
+| RF15, RF24 relatórios (Excel/CSV) | Histórico (produtor), Transações e Produtores (cerealista) |
 | RF16 a RF23, RF25 painel, preços, quantidade, produtores, fila, aprovação, transações, descontos, auditoria | `cerealista/` |
 
 RNF atendidos nesta versão: senhas com bcrypt e autenticação HTTP Basic (RNF02), auditoria (RNF09), responsivo e confirmações antes de ações críticas (RNF05).
-Ainda a validar: desempenho e carga (RNF01, RNF04), HTTPS/backup/SLA (RNF02, RNF03, que dependem do deploy), acessibilidade WCAG (RNF07), LGPD (RNF10) e cobertura de 70% (RNF08).
-
-## Pendências e decisões em aberto
-
-Veja as seções finais do `README.md` de cada projeto. As principais: **paleta** (ciano/laranja do tema × verde/ocre da marca × azul-petróleo do pitch), **PDF nos relatórios**, **e-mail real** na recuperação de senha e **deploy**.
