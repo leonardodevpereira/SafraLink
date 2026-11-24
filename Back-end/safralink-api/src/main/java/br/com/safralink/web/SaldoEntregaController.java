@@ -41,6 +41,12 @@ public class SaldoEntregaController {
         return saldoService.listarDoProdutor(usuario.getId());
     }
 
+    @GetMapping("/saldos/{produtoId}")
+    @PreAuthorize("hasRole('PRODUTOR')")
+    public SaldoResponse saldo(@AuthenticationPrincipal UsuarioPrincipal usuario, @PathVariable Long produtoId) {
+        return saldoService.buscarDoProdutor(usuario.getId(), produtoId);
+    }
+
     @GetMapping("/entregas")
     public PageResponse<EntregaResponse> entregas(@AuthenticationPrincipal UsuarioPrincipal usuario,
                                                   @RequestParam(defaultValue = "0") int pagina,

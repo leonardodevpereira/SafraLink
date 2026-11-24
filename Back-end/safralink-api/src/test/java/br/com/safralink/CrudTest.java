@@ -43,6 +43,12 @@ class CrudTest {
     @AfterEach
     void limparProdutoDeTeste() {
         String filtro = "(select id from produtos where grao = 'FEIJAO' and mercado = 'EXTERNO')";
+        String requisicoes = "(select id from requisicoes_venda where produto_id in " + filtro + ")";
+        jdbc.update("delete from descontos_aplicados where transacao_id in "
+                + "(select id from transacoes where requisicao_id in " + requisicoes + ")");
+        jdbc.update("delete from transacoes where requisicao_id in " + requisicoes);
+        jdbc.update("delete from contra_propostas where requisicao_id in " + requisicoes);
+        jdbc.update("delete from requisicoes_venda where produto_id in " + filtro);
         for (String tabela : new String[] {"precos", "quantidades_disponiveis", "saldos", "entregas"}) {
             jdbc.update("delete from " + tabela + " where produto_id in " + filtro);
         }
@@ -131,6 +137,81 @@ class CrudTest {
         chamar(delete("/api/produtores/" + produtorId), cer, null, 204);
         chamar(get("/api/produtores/" + produtorId), cer, null, 404);
         chamar(get("/api/usuarios/me"), pro, null, 401);
+    }
+
+    @Test
+    void crudDasEntidadesDerivadas() throws Exception {
+        String sufixo = UUID.randomUUID().toString().substring(0, 8);
+        String emailC = "der-c-" + sufixo + "@teste.dev";
+        Cerealista c = new Cerealista();
+        c.setNome("Cerealista Derivadas");
+        c.setRazaoSocial("Cerealista Derivadas Ltda");
+        c.setCnpj(String.valueOf(ThreadLocalRandom.current().nextLong(10_000_000_000_000L, 99_999_999_999_999L)));
+        c.setEmail(emailC);
+        c.setSenhaHash(encoder.encode(SENHA));
+        cerealistaRepository.save(c);
+        String cer = basic(emailC);
+
+        String emailP = "der-p-" + sufixo + "@teste.dev";
+        long produtorId = chamar(post("/api/produtores"), cer, Map.of("nome", "Produtor Derivadas", "email", emailP,
+                "senha", SENHA, "cpf", cpf(sufixo)), 201).get("id").asLong();
+        String pro = basic(emailP);
+
+        long produtoId = chamar(post("/api/produtos"), cer,
+                Map.of("nome", "Feijão Derivadas " + sufixo, "grao", "FEIJAO", "mercado", "EXTERNO"), 201)
+                .get("id").asLong();
+        chamar(post("/api/precos"), cer, Map.of("produtoId", produtoId, "valorSaca", 200), 201);
+        chamar(put("/api/quantidades/" + produtoId), cer, Map.of("quantidade", 1000), 200);
+        chamar(post("/api/entregas"), cer, Map.of("produtorId", produtorId, "produtoId", produtoId,
+                "quantidade", 100), 201);
+        long reqId = chamar(post("/api/requisicoes"), pro, Map.of("produtoId", produtoId, "quantidade", 50), 201)
+                .get("id").asLong();
+
+        long cpId = chamar(post("/api/requisicoes/" + reqId + "/contra-propostas"), cer, Map.of("precoSaca", 190), 201)
+                .get("contraPropostas").get(0).get("id").asLong();
+        assertThat(chamar(get("/api/requisicoes/" + reqId + "/contra-propostas"), pro, null, 200).size()).isEqualTo(1);
+        assertThat(chamar(get("/api/contra-propostas/" + cpId), pro, null, 200).get("precoSaca").decimalValue())
+                .isEqualByComparingTo("190");
+        chamar(get("/api/contra-propostas/999999999"), cer, null, 404);
+        chamar(put("/api/contra-propostas/" + cpId), pro, Map.of("precoSaca", 150), 403);
+        chamar(put("/api/contra-propostas/" + cpId), cer, Map.of("precoSaca", 0), 400);
+        chamar(put("/api/contra-propostas/" + cpId), cer, Map.of("precoSaca", 195), 200);
+        assertThat(chamar(get("/api/contra-propostas/" + cpId), cer, null, 200).get("precoSaca").decimalValue())
+                .isEqualByComparingTo("195");
+        chamar(delete("/api/contra-propostas/" + cpId), pro, null, 403);
+        chamar(delete("/api/contra-propostas/" + cpId), cer, null, 204);
+        chamar(get("/api/contra-propostas/" + cpId), cer, null, 404);
+
+        long cpAceita = chamar(post("/api/requisicoes/" + reqId + "/contra-propostas"), cer, Map.of("precoSaca", 198), 201)
+                .get("contraPropostas").get(0).get("id").asLong();
+        chamar(post("/api/contra-propostas/" + cpAceita + "/aceitar"), pro, null, 200);
+        chamar(put("/api/contra-propostas/" + cpAceita), cer, Map.of("precoSaca", 100), 409);
+        chamar(delete("/api/contra-propostas/" + cpAceita), cer, null, 409);
+
+        JsonNode notificacoes = chamar(get("/api/notificacoes"), pro, null, 200);
+        assertThat(notificacoes.size()).isGreaterThanOrEqualTo(1);
+        long notificacaoId = notificacoes.get(0).get("id").asLong();
+        chamar(get("/api/notificacoes/" + notificacaoId), pro, null, 200);
+        chamar(get("/api/notificacoes/" + notificacaoId), cer, null, 404);
+        chamar(delete("/api/notificacoes/" + notificacaoId), cer, null, 404);
+        chamar(delete("/api/notificacoes/" + notificacaoId), pro, null, 204);
+        chamar(get("/api/notificacoes/" + notificacaoId), pro, null, 404);
+
+        assertThat(chamar(get("/api/saldos/" + produtoId), pro, null, 200).get("quantidade").decimalValue())
+                .isEqualByComparingTo("100");
+        chamar(get("/api/saldos/" + produtoId), cer, null, 403);
+        chamar(get("/api/saldos/999999999"), pro, null, 404);
+
+        JsonNode aprovada = chamar(post("/api/requisicoes/" + reqId + "/aprovar"), cer, null, 200);
+        long transacaoId = aprovada.get("transacao").get("id").asLong();
+        chamar(get("/api/transacoes/" + transacaoId), pro, null, 200);
+        chamar(get("/api/transacoes/" + transacaoId), cer, null, 200);
+        chamar(get("/api/transacoes/999999999"), cer, null, 404);
+
+        long auditoriaId = chamar(get("/api/auditoria?tamanho=1"), cer, null, 200).get("conteudo").get(0).get("id").asLong();
+        chamar(get("/api/auditoria/" + auditoriaId), cer, null, 200);
+        chamar(get("/api/auditoria/" + auditoriaId), pro, null, 403);
+        chamar(get("/api/auditoria/999999999"), cer, null, 404);
     }
 
     private JsonNode saldo(String cred, long produtoId) throws Exception {

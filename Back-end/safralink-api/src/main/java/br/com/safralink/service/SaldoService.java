@@ -50,6 +50,12 @@ public class SaldoService {
     }
 
     @Transactional(readOnly = true)
+    public SaldoResponse buscarDoProdutor(Long produtorId, Long produtoId) {
+        return listarDoProdutor(produtorId).stream().filter(s -> s.produtoId().equals(produtoId)).findFirst()
+                .orElseThrow(() -> ApiException.naoEncontrado("Produto não encontrado."));
+    }
+
+    @Transactional(readOnly = true)
     public BigDecimal disponivelParaVenda(Long produtorId, Long produtoId) {
         BigDecimal saldo = saldoRepository.findByProdutorIdAndProdutoId(produtorId, produtoId)
                 .map(Saldo::getQuantidade).orElse(BigDecimal.ZERO);

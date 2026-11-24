@@ -11,6 +11,7 @@ import br.com.safralink.repository.DescontoRepository;
 import br.com.safralink.repository.TransacaoRepository;
 import br.com.safralink.security.UsuarioPrincipal;
 import br.com.safralink.util.Tempo;
+import br.com.safralink.web.ApiException;
 import br.com.safralink.web.dto.OutrosDtos.PageResponse;
 import br.com.safralink.web.dto.RequisicaoDtos.DescontoAplicadoResponse;
 import br.com.safralink.web.dto.RequisicaoDtos.TransacaoResponse;
@@ -71,6 +72,15 @@ public class TransacaoService {
         var page = repository.findAll(filtro(usuario, produtorId, produtoId, status, de, ate),
                 PageRequest.of(Math.max(pagina, 0), AuditoriaService.limitar(tamanho), ORDEM));
         return PageResponse.de(page.map(TransacaoService::resposta));
+    }
+
+    @Transactional(readOnly = true)
+    public TransacaoResponse buscar(UsuarioPrincipal usuario, Long id) {
+        Transacao t = repository.findById(id)
+                .filter(x -> usuario.isCerealista()
+                        || x.getRequisicao().getProdutor().getId().equals(usuario.getId()))
+                .orElseThrow(() -> ApiException.naoEncontrado("Transação não encontrada."));
+        return resposta(t);
     }
 
     @Transactional(readOnly = true)

@@ -73,8 +73,11 @@ def chamar(metodo, caminho, quem, corpo):
 
 def pegar(obj, caminho):
     for parte in caminho.split("."):
-        obj = obj[parte]
+        obj = obj[int(parte)] if parte.isdigit() else obj[parte]
     return obj
+
+def acesso_js(caminho):
+    return "".join(f"[{parte}]" if parte.isdigit() else f".{parte}" for parte in caminho.split("."))
 
 PASSOS = []
 
@@ -197,6 +200,54 @@ p(F, "200 - Produtor consulta suas transações (valor bruto, descontos e líqui
   "{{baseUrl}}/api/transacoes?pagina=0&tamanho=3", "pro", None, 200)
 p(F, "200 - Produtor consulta seus saldos", "GET", "{{baseUrl}}/api/saldos", "pro", None, 200)
 
+G = "8. Contra-propostas, notificações e consultas das entidades derivadas"
+p(G, "201 - Produtor solicita venda para negociar", "POST", "{{baseUrl}}/api/requisicoes", "pro",
+  {"produtoId": "{{produtoMilhoExternoId}}", "quantidade": 10}, 201, ("negociacaoId", "id"))
+p(G, "201 - Cerealista envia contra-proposta de preço", "POST",
+  "{{baseUrl}}/api/requisicoes/{{negociacaoId}}/contra-propostas", "cer", {"precoSaca": 70}, 201,
+  ("contraPropostaId", "contraPropostas.0.id"))
+p(G, "200 - Listar contra-propostas da requisição", "GET",
+  "{{baseUrl}}/api/requisicoes/{{negociacaoId}}/contra-propostas", "pro", None, 200)
+p(G, "200 - Buscar contra-proposta por id", "GET", "{{baseUrl}}/api/contra-propostas/{{contraPropostaId}}", "pro", None, 200)
+p(G, "404 - Contra-proposta inexistente", "GET", "{{baseUrl}}/api/contra-propostas/999999999", "cer", None, 404)
+p(G, "403 - Só o autor altera a contra-proposta", "PUT", "{{baseUrl}}/api/contra-propostas/{{contraPropostaId}}", "pro",
+  {"precoSaca": 50}, 403)
+p(G, "400 - Validação: preço proposto zero", "PUT", "{{baseUrl}}/api/contra-propostas/{{contraPropostaId}}", "cer",
+  {"precoSaca": 0}, 400)
+p(G, "200 - Autor altera a contra-proposta pendente", "PUT", "{{baseUrl}}/api/contra-propostas/{{contraPropostaId}}", "cer",
+  {"precoSaca": 71}, 200)
+p(G, "403 - Só o autor retira a contra-proposta", "DELETE", "{{baseUrl}}/api/contra-propostas/{{contraPropostaId}}", "pro",
+  None, 403)
+p(G, "204 - Autor retira a contra-proposta", "DELETE", "{{baseUrl}}/api/contra-propostas/{{contraPropostaId}}", "cer",
+  None, 204)
+p(G, "404 - Contra-proposta retirada", "GET", "{{baseUrl}}/api/contra-propostas/{{contraPropostaId}}", "cer", None, 404)
+p(G, "201 - Nova contra-proposta", "POST", "{{baseUrl}}/api/requisicoes/{{negociacaoId}}/contra-propostas", "cer",
+  {"precoSaca": 69}, 201, ("contraPropostaId", "contraPropostas.0.id"))
+p(G, "200 - Produtor aceita a contra-proposta", "POST", "{{baseUrl}}/api/contra-propostas/{{contraPropostaId}}/aceitar",
+  "pro", None, 200)
+p(G, "409 - Regra: contra-proposta já respondida não pode ser alterada", "PUT",
+  "{{baseUrl}}/api/contra-propostas/{{contraPropostaId}}", "cer", {"precoSaca": 100}, 409)
+p(G, "200 - Listar notificações do produtor", "GET", "{{baseUrl}}/api/notificacoes", "pro", None, 200,
+  ("notificacaoId", "0.id"))
+p(G, "200 - Buscar notificação por id", "GET", "{{baseUrl}}/api/notificacoes/{{notificacaoId}}", "pro", None, 200)
+p(G, "404 - Notificação de outro usuário não é visível", "GET", "{{baseUrl}}/api/notificacoes/{{notificacaoId}}", "cer",
+  None, 404)
+p(G, "204 - Excluir notificação", "DELETE", "{{baseUrl}}/api/notificacoes/{{notificacaoId}}", "pro", None, 204)
+p(G, "404 - Notificação excluída", "GET", "{{baseUrl}}/api/notificacoes/{{notificacaoId}}", "pro", None, 404)
+p(G, "200 - Produtor consulta o saldo de um produto", "GET", "{{baseUrl}}/api/saldos/{{produtoMilhoExternoId}}", "pro",
+  None, 200)
+p(G, "404 - Saldo de produto inexistente", "GET", "{{baseUrl}}/api/saldos/999999999", "pro", None, 404)
+p(G, "200 - Listar transações (guarda o id)", "GET", "{{baseUrl}}/api/transacoes?pagina=0&tamanho=1", "pro", None, 200,
+  ("transacaoId", "conteudo.0.id"))
+p(G, "200 - Buscar transação por id", "GET", "{{baseUrl}}/api/transacoes/{{transacaoId}}", "pro", None, 200)
+p(G, "404 - Transação inexistente", "GET", "{{baseUrl}}/api/transacoes/999999999", "cer", None, 404)
+p(G, "200 - Listar auditoria (guarda o id)", "GET", "{{baseUrl}}/api/auditoria?pagina=0&tamanho=1", "cer", None, 200,
+  ("auditoriaId", "conteudo.0.id"))
+p(G, "200 - Buscar registro de auditoria por id", "GET", "{{baseUrl}}/api/auditoria/{{auditoriaId}}", "cer", None, 200)
+p(G, "403 - Produtor não acessa a auditoria", "GET", "{{baseUrl}}/api/auditoria/{{auditoriaId}}", "pro", None, 403)
+p(G, "204 - Produtor cancela a requisição de teste", "DELETE", "{{baseUrl}}/api/requisicoes/{{negociacaoId}}", "pro", None,
+  204)
+
 RUN["sufixo"] = str(int(time.time()))
 RUN["cpfGerado"] = cpf_valido()
 pastas = {}
@@ -250,7 +301,7 @@ for (pasta, nome, metodo, caminho, quem, corpo, esperado, guardar, pre) in PASSO
             "pm.collectionVariables.set('cpfGerado', d.join(''));"]}})
     testes = [f"pm.test('Status {esperado}', function () {{ pm.response.to.have.status({esperado}); }});"]
     if guardar:
-        testes.append(f"pm.collectionVariables.set('{guardar[0]}', pm.response.json().{guardar[1]});")
+        testes.append(f"pm.collectionVariables.set('{guardar[0]}', pm.response.json(){acesso_js(guardar[1])});")
     eventos.append({"listen": "test", "script": {"type": "text/javascript", "exec": testes}})
 
     item = {"name": nome, "event": eventos, "request": req, "response": [{
@@ -264,7 +315,7 @@ colecao = {
     "info": {
         "_postman_id": "5a7f0c1e-6b0a-4d1b-9a55-5afa11ce0001",
         "name": "SafraLink - Back-end (Projeto Integrador)",
-        "description": "Coleção do back-end do SafraLink (Spring Boot + MySQL, HTTP Basic). Ordem de execução: pastas 1 a 7. "
+        "description": "Coleção do back-end do SafraLink (Spring Boot + MySQL, HTTP Basic). Ordem de execução: pastas 1 a 8. "
                        "Pré-requisito: API em http://localhost:8080 com `safralink.dados-demo=true`. "
                        "As variáveis (usuários de teste, ids) ficam em Variables da coleção. Cada requisição tem uma resposta "
                        "salva (Save Response) como evidência.",
@@ -275,7 +326,8 @@ colecao = {
     "variable": [{"key": k, "value": v, "type": "string"} for k, v in VARS.items()] + [
         {"key": k, "value": "", "type": "string"} for k in (
             "produtoId", "precoId", "precoAtualizadoId", "descontoId", "novoProdutorId", "entregaId", "requisicaoId",
-            "vendaId", "sufixo", "cpfGerado")],
+            "vendaId", "sufixo", "cpfGerado", "negociacaoId", "contraPropostaId", "notificacaoId", "transacaoId",
+            "auditoriaId")],
 }
 destino = Path(__file__).with_name("projeto-integrador.postman_collection.json")
 destino.write_text(json.dumps(colecao, ensure_ascii=False, indent=2), encoding="utf-8")

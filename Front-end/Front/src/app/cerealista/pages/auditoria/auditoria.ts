@@ -35,6 +35,8 @@ const ROTULOS: Record<AcaoAuditoria, string> = {
   REQUISICAO_EXCLUIDA: 'Requisição excluída',
   PRODUTOR_CADASTRADO: 'Produtor cadastrado',
   PRODUTOR_INATIVADO: 'Produtor inativado',
+  CONTRA_PROPOSTA_ALTERADA: 'Contra-proposta alterada',
+  CONTRA_PROPOSTA_EXCLUIDA: 'Contra-proposta excluída',
 };
 
 @Component({

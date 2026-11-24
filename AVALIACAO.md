@@ -52,7 +52,7 @@ Outros caminhos: recusar uma venda (com motivo) e o produtor reenviá-la; marcar
 | Roteamento habilitado, SSR/SSG desabilitado | roteamento por módulo; o `angular.json` não tem configuração de SSR nem de prerender |
 | Angular Material | tabelas, diálogos, selects, autocomplete, botões, chips, menus, paginador, snackbar etc., reexportados pelo `SharedModule` |
 | 4 ou mais entidades relacionadas | 16 entidades: `Usuario` (`Produtor`, `Cerealista`), `Produto`, `Preco`, `QuantidadeDisponivel`, `Saldo`, `Entrega`, `RequisicaoVenda`, `ContraProposta`, `Transacao`, `Desconto`, `DescontoAplicado`, `Notificacao`, `Auditoria`, `TokenRecuperacaoSenha` |
-| CRUD completo das entidades principais | **Produtos**, **Descontos**, **Entregas**, **Produtores** (menus da cerealista) e **Requisições** (área do produtor) têm cadastro, edição e exclusão pela interface. Os preços são lançados em "Preços e quantidades" |
+| CRUD completo das entidades principais | **Produtos**, **Descontos**, **Entregas**, **Produtores** (menus da cerealista) e **Requisições** (área do produtor) têm cadastro, edição e exclusão pela interface. Os preços são lançados em "Preços e quantidades". Pela API (Postman) também há CRUD de **Preço**, **Contra-proposta** e **Notificação**; `Saldo`, `Transação` e `Auditoria` são derivadas do sistema e têm consulta individual e listagem (ver `documentacao-api.md`) |
 | Dashboard com 3 ou mais KPIs | Painel da cerealista (total comprado, saldo em custódia, produtores ativos, requisições pendentes, gráfico de 30 dias, compras por produto) e Início do produtor (resumo geral, cartão por grão, preços e saldos) |
 | Fluxo principal de ponta a ponta | roteiro da seção 4 |
 
@@ -63,7 +63,7 @@ Outros caminhos: recusar uma venda (com motivo) e o produtor reenviá-la; marcar
 | Diagrama de classes | [`Back-end/docs/diagrama-de-classes.md`](Back-end/docs/diagrama-de-classes.md) |
 | Modelo de dados (entidade-relacionamento) | [`Back-end/docs/modelo-dados.md`](Back-end/docs/modelo-dados.md) |
 | Endpoints, regras de negócio e códigos HTTP | [`Back-end/docs/documentacao-api.md`](Back-end/docs/documentacao-api.md) |
-| Coleção do Postman (64 requisições com respostas salvas) | [`Back-end/postman/projeto-integrador.postman_collection.json`](Back-end/postman/projeto-integrador.postman_collection.json) |
+| Coleção do Postman (92 requisições com respostas salvas) | [`Back-end/postman/projeto-integrador.postman_collection.json`](Back-end/postman/projeto-integrador.postman_collection.json) |
 | README do back-end (execução, configuração, decisões) | [`Back-end/README.md`](Back-end/README.md) |
 | README do front-end | [`Front-end/Front/README.md`](Front-end/Front/README.md) |
 

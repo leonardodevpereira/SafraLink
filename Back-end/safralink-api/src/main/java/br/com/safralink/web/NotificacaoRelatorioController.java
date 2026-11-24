@@ -46,6 +46,18 @@ public class NotificacaoRelatorioController {
         return notificacoes.naoLidas(usuario.getId());
     }
 
+    @GetMapping("/notificacoes/{id}")
+    public NotificacaoResponse buscarNotificacao(@AuthenticationPrincipal UsuarioPrincipal usuario,
+                                                 @PathVariable Long id) {
+        return notificacoes.buscar(usuario.getId(), id);
+    }
+
+    @DeleteMapping("/notificacoes/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void excluirNotificacao(@AuthenticationPrincipal UsuarioPrincipal usuario, @PathVariable Long id) {
+        notificacoes.excluir(usuario.getId(), id);
+    }
+
     @PostMapping("/notificacoes/{id}/lida")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void marcarLida(@AuthenticationPrincipal UsuarioPrincipal usuario, @PathVariable Long id) {

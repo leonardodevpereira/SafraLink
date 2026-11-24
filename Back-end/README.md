@@ -86,9 +86,9 @@ Em produção use `SPRING_PROFILES_ACTIVE=prod` (não há valores padrão para s
 | Preços e quantidades | `PUT /precos/{produtoId}`, `PUT /quantidades/{produtoId}` | cerealista |
 | Saldos e entregas | `GET /saldos` (produtor), `GET/POST /entregas` | produtor / cerealista |
 | Vendas | `GET/POST /requisicoes` (o `POST` aceita `observacao` opcional, até 255 caracteres), `POST /requisicoes/{id}/aprovar·recusar·processar·reenviar` | ambos (por ação) |
-| Negociação | `POST /requisicoes/{id}/contra-propostas`, `POST /contra-propostas/{id}/aceitar·recusar` | ambos |
-| Gestão | `GET /transacoes`, `/descontos`, `/produtores`, `/dashboard/{produtor,cerealista}`, `/auditoria` | conforme perfil |
-| Notificações | `GET /notificacoes`, `POST /notificacoes/lidas` | logado |
+| Negociação | `GET/POST /requisicoes/{id}/contra-propostas`, `GET/PUT/DELETE /contra-propostas/{id}` (só o autor altera ou retira), `POST /contra-propostas/{id}/aceitar·recusar` | ambos |
+| Gestão | `GET /transacoes[/{id}]`, `/descontos`, `/produtores`, `/dashboard/{produtor,cerealista}`, `/auditoria[/{id}]` | conforme perfil |
+| Notificações | `GET /notificacoes[/{id}]`, `DELETE /notificacoes/{id}`, `POST /notificacoes/lidas` | logado |
 | Relatórios | `GET /relatorios/transacoes.csv`, `/relatorios/produtores.csv` | logado / cerealista |
 
 Erros seguem o formato `{ timestamp, status, erro, mensagem, campos? }`. A tabela completa (CRUD por entidade, regras, códigos HTTP) está em [`docs/documentacao-api.md`](docs/documentacao-api.md).

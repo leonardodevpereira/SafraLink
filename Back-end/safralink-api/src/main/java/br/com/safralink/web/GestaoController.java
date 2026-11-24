@@ -70,6 +70,17 @@ public class GestaoController {
         return transacaoService.listar(usuario, produtorId, produtoId, status, de, ate, pagina, tamanho);
     }
 
+    @GetMapping("/transacoes/{id}")
+    public TransacaoResponse transacao(@AuthenticationPrincipal UsuarioPrincipal usuario, @PathVariable Long id) {
+        return transacaoService.buscar(usuario, id);
+    }
+
+    @GetMapping("/auditoria/{id}")
+    @PreAuthorize("hasRole('CEREALISTA')")
+    public AuditoriaResponse auditoria(@PathVariable Long id) {
+        return auditoriaService.buscar(id);
+    }
+
     @GetMapping("/descontos")
     public List<DescontoResponse> descontos() {
         return descontoService.listar();

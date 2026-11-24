@@ -56,6 +56,21 @@ public class NotificacaoService {
                 .map(this::resposta).toList();
     }
 
+    @Transactional(readOnly = true)
+    public NotificacaoResponse buscar(Long usuarioId, Long id) {
+        return resposta(carregar(usuarioId, id));
+    }
+
+    @Transactional
+    public void excluir(Long usuarioId, Long id) {
+        repository.delete(carregar(usuarioId, id));
+    }
+
+    private Notificacao carregar(Long usuarioId, Long id) {
+        return repository.findById(id).filter(x -> x.getUsuario().getId().equals(usuarioId))
+                .orElseThrow(() -> ApiException.naoEncontrado("Notificação não encontrada."));
+    }
+
     @Transactional
     public void marcarComoLida(Long usuarioId, Long id) {
         Notificacao n = repository.findById(id).filter(x -> x.getUsuario().getId().equals(usuarioId))

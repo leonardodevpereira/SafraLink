@@ -35,7 +35,9 @@ export type AcaoAuditoria =
   | 'REQUISICAO_ALTERADA'
   | 'REQUISICAO_EXCLUIDA'
   | 'PRODUTOR_CADASTRADO'
-  | 'PRODUTOR_INATIVADO';
+  | 'PRODUTOR_INATIVADO'
+  | 'CONTRA_PROPOSTA_ALTERADA'
+  | 'CONTRA_PROPOSTA_EXCLUIDA';
 
 export interface Endereco {
   logradouro?: string | null;

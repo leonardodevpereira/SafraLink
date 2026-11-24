@@ -38,11 +38,15 @@ Base: `http://localhost:8080/api`. Formato JSON. Erros: `{ "timestamp", "status"
 | **Produtor** | `POST /produtores` (C); autocadastro em `POST /auth/registro` | `GET /produtores?busca=`, `GET /produtores/{id}` (C) | `PUT /produtores/{id}` (C); o próprio usuário em `PUT /usuarios/me` | `DELETE /produtores/{id}` (C): exclusão lógica |
 | **Entrega** | `POST /entregas` (C) | `GET /entregas`, `GET /entregas/{id}` | `PUT /entregas/{id}` (C) | `DELETE /entregas/{id}` (C) |
 | **Requisição de venda** | `POST /requisicoes` (P) | `GET /requisicoes?status=&produtorId=`, `GET /requisicoes/{id}` | `PUT /requisicoes/{id}` (P, só pendente) | `DELETE /requisicoes/{id}` (P, pendente ou recusada) |
+| **Contra-proposta** | `POST /requisicoes/{id}/contra-propostas` (as duas partes, requisição pendente) | `GET /requisicoes/{id}/contra-propostas`, `GET /contra-propostas/{id}` | `PUT /contra-propostas/{id}` (só o autor, enquanto pendente); a outra parte responde em `POST /contra-propostas/{id}/aceitar·recusar` | `DELETE /contra-propostas/{id}` (só o autor, enquanto pendente) |
+| **Notificação** | gerada pelo sistema a cada evento | `GET /notificacoes`, `GET /notificacoes/nao-lidas`, `GET /notificacoes/{id}` | `POST /notificacoes/{id}/lida`, `POST /notificacoes/lidas` | `DELETE /notificacoes/{id}`, `DELETE /notificacoes` (só as do próprio usuário) |
 
 (C) = somente CEREALISTA · (P) = somente PRODUTOR · sem marca = qualquer usuário autenticado (o produtor só enxerga o que é dele).
 
-Entidades **derivadas** (criadas pelo sistema, só leitura pela API): `Saldo` (`GET /saldos`), `Transacao` e
-`DescontoAplicado` (`GET /transacoes`), `ContraProposta`, `Notificacao` e `Auditoria`.
+Entidades **derivadas** (criadas e mantidas pelo próprio sistema; a API oferece só leitura, de propósito, para não
+quebrar a integridade do negócio e da auditoria): `Saldo` (`GET /saldos`, `GET /saldos/{produtoId}` (P); só muda por entrega, venda e ajuste),
+`Transacao` e `DescontoAplicado` (`GET /transacoes`, `GET /transacoes/{id}`; nascem na aprovação da venda) e
+`Auditoria` (`GET /auditoria`, `GET /auditoria/{id}` (C); registro imutável).
 
 ## Funcionalidade específica do PI — fluxo de venda de grãos
 
@@ -88,6 +92,6 @@ respostas 400/404/409/422; `SecurityConfig` padroniza 401/403.
 ## Postman
 
 Coleção: [`postman/projeto-integrador.postman_collection.json`](../postman/projeto-integrador.postman_collection.json)
-(importar no Postman; 64 requisições em 7 pastas, com respostas salvas e as variáveis da coleção incluídas).
+(importar no Postman; 92 requisições em 8 pastas, com respostas salvas e as variáveis da coleção incluídas).
 Execute as pastas em ordem, com a API no ar e `safralink.dados-demo=true`. O arquivo é regenerado (com respostas reais)
 por `python postman/gerar_colecao.py`.

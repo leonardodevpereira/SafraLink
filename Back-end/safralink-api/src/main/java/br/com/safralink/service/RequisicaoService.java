@@ -303,6 +303,62 @@ public class RequisicaoService {
         return resposta(r);
     }
 
+    @Transactional(readOnly = true)
+    public List<ContraPropostaResponse> listarContraPropostas(UsuarioPrincipal usuario, Long requisicaoId) {
+        carregarComAcesso(usuario, requisicaoId);
+        return contraPropostaRepository.findByRequisicaoIdOrderByCriadoEmAscIdAsc(requisicaoId).stream()
+                .map(this::resposta).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public ContraPropostaResponse buscarContraProposta(UsuarioPrincipal usuario, Long contraPropostaId) {
+        ContraProposta cp = carregarContraProposta(contraPropostaId);
+        verificarAcesso(usuario, cp.getRequisicao());
+        return resposta(cp);
+    }
+
+    @Transactional
+    public RequisicaoResponse atualizarContraProposta(UsuarioPrincipal usuario, Long contraPropostaId,
+                                                      ContraPropostaRequest req) {
+        ContraProposta cp = carregarContraProposta(contraPropostaId);
+        RequisicaoVenda r = bloquearComAcesso(usuario, cp.getRequisicao().getId());
+        exigirContraPropostaEditavel(usuario, r, cp);
+        Usuario autor = usuarioService.buscar(usuario.getId());
+        cp.setPrecoSaca(req.precoSaca());
+        auditoria.registrar(autor, AcaoAuditoria.CONTRA_PROPOSTA_ALTERADA, "contra_propostas", cp.getId(),
+                "Novo preço proposto " + PrecoService.moeda(req.precoSaca()) + "/sc");
+        notificarOutraParte(usuario, r, TipoNotificacao.CONTRA_PROPOSTA,
+                autor.getNome() + " alterou a proposta para " + PrecoService.moeda(req.precoSaca()) + "/sc em "
+                        + resumo(r));
+        return resposta(r);
+    }
+
+    @Transactional
+    public void excluirContraProposta(UsuarioPrincipal usuario, Long contraPropostaId) {
+        ContraProposta cp = carregarContraProposta(contraPropostaId);
+        RequisicaoVenda r = bloquearComAcesso(usuario, cp.getRequisicao().getId());
+        exigirContraPropostaEditavel(usuario, r, cp);
+        Usuario autor = usuarioService.buscar(usuario.getId());
+        contraPropostaRepository.delete(cp);
+        auditoria.registrar(autor, AcaoAuditoria.CONTRA_PROPOSTA_EXCLUIDA, "contra_propostas", contraPropostaId,
+                "Proposta de " + PrecoService.moeda(cp.getPrecoSaca()) + "/sc retirada");
+    }
+
+    private ContraProposta carregarContraProposta(Long id) {
+        return contraPropostaRepository.findById(id)
+                .orElseThrow(() -> ApiException.naoEncontrado("Contra-proposta não encontrada."));
+    }
+
+    private void exigirContraPropostaEditavel(UsuarioPrincipal usuario, RequisicaoVenda r, ContraProposta cp) {
+        if (!cp.getAutor().getId().equals(usuario.getId())) {
+            throw ApiException.proibido("Somente quem fez a proposta pode alterá-la ou retirá-la.");
+        }
+        exigirStatus(r, StatusRequisicao.PENDENTE, "Só é possível negociar requisições pendentes.");
+        if (cp.getStatus() != StatusContraProposta.PENDENTE) {
+            throw ApiException.conflito("Esta contra-proposta já foi respondida e não pode mais ser alterada.");
+        }
+    }
+
     public RequisicaoResponse resposta(RequisicaoVenda r) {
         List<ContraPropostaResponse> contraPropostas = contraPropostaRepository
                 .findByRequisicaoIdOrderByCriadoEmAscIdAsc(r.getId()).stream().map(this::resposta).toList();

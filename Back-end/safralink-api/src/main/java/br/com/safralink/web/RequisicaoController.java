@@ -8,7 +8,9 @@ import br.com.safralink.security.UsuarioPrincipal;
 import br.com.safralink.service.RequisicaoService;
 import br.com.safralink.web.dto.OutrosDtos.PageResponse;
 import br.com.safralink.web.dto.RequisicaoDtos.ContraPropostaRequest;
+import br.com.safralink.web.dto.RequisicaoDtos.ContraPropostaResponse;
 import br.com.safralink.web.dto.RequisicaoDtos.RecusaRequest;
+import java.util.List;
 import br.com.safralink.web.dto.RequisicaoDtos.RequisicaoRequest;
 import br.com.safralink.web.dto.RequisicaoDtos.RequisicaoResponse;
 import jakarta.validation.Valid;
@@ -85,6 +87,31 @@ public class RequisicaoController {
     public RequisicaoResponse contraProposta(@AuthenticationPrincipal UsuarioPrincipal usuario,
                                              @PathVariable Long id, @Valid @RequestBody ContraPropostaRequest req) {
         return service.enviarContraProposta(usuario, id, req);
+    }
+
+    @GetMapping("/requisicoes/{id}/contra-propostas")
+    public List<ContraPropostaResponse> contraPropostas(@AuthenticationPrincipal UsuarioPrincipal usuario,
+                                                        @PathVariable Long id) {
+        return service.listarContraPropostas(usuario, id);
+    }
+
+    @GetMapping("/contra-propostas/{id}")
+    public ContraPropostaResponse buscarContraProposta(@AuthenticationPrincipal UsuarioPrincipal usuario,
+                                                       @PathVariable Long id) {
+        return service.buscarContraProposta(usuario, id);
+    }
+
+    @PutMapping("/contra-propostas/{id}")
+    public RequisicaoResponse atualizarContraProposta(@AuthenticationPrincipal UsuarioPrincipal usuario,
+                                                      @PathVariable Long id,
+                                                      @Valid @RequestBody ContraPropostaRequest req) {
+        return service.atualizarContraProposta(usuario, id, req);
+    }
+
+    @DeleteMapping("/contra-propostas/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void excluirContraProposta(@AuthenticationPrincipal UsuarioPrincipal usuario, @PathVariable Long id) {
+        service.excluirContraProposta(usuario, id);
     }
 
     @PostMapping("/contra-propostas/{id}/aceitar")

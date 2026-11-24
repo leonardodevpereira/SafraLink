@@ -5,6 +5,7 @@ import br.com.safralink.domain.Auditoria;
 import br.com.safralink.domain.Usuario;
 import br.com.safralink.repository.AuditoriaRepository;
 import br.com.safralink.util.Tempo;
+import br.com.safralink.web.ApiException;
 import br.com.safralink.web.dto.OutrosDtos.AuditoriaResponse;
 import br.com.safralink.web.dto.OutrosDtos.PageResponse;
 import jakarta.persistence.criteria.Predicate;
@@ -71,6 +72,14 @@ public class AuditoriaService {
                 .map(a -> new AuditoriaResponse(a.getId(), a.getUsuarioNome(), a.getUsuarioEmail(), a.getAcao(),
                         a.getEntidade(), a.getEntidadeId(), a.getDetalhes(), a.getCriadoEm()));
         return PageResponse.de(page);
+    }
+
+    @Transactional(readOnly = true)
+    public AuditoriaResponse buscar(Long id) {
+        Auditoria a = repository.findById(id)
+                .orElseThrow(() -> ApiException.naoEncontrado("Registro de auditoria não encontrado."));
+        return new AuditoriaResponse(a.getId(), a.getUsuarioNome(), a.getUsuarioEmail(), a.getAcao(),
+                a.getEntidade(), a.getEntidadeId(), a.getDetalhes(), a.getCriadoEm());
     }
 
     static int limitar(int tamanho) {
