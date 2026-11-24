@@ -90,3 +90,11 @@ cd Front-end/Front && npm install && npm start
 ```
 
 As contas de demonstração do perfil `dev` estão em [`Back-end/README.md`](Back-end/README.md).
+
+## Equipe
+
+**404 Team** — Projeto Integrador IV, Engenharia de Software (UNIFIO).
+
+| Nome completo | RA |
+| --- | --- |
+| Leonardo Henrique Pereira Jose | 269128 |
